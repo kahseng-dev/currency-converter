@@ -26,9 +26,27 @@ export default function TabLayout() {
         }} 
       />
       <Tabs.Screen
+        name="convert" 
+        options={{
+          title: 'Convert',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="widgets" 
         options={{
           title: 'Widgets',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings" 
+        options={{
+          title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
           ),
