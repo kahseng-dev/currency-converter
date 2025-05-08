@@ -1,95 +1,82 @@
 import { Text, View, StyleSheet } from "react-native";
-import { Rate } from "../../types/rate";
+import { CircleFlag } from 'react-circle-flags';
+import { Rate } from "@/types/rate";
+import { Colors } from '@/constants/Colors';
+import { get } from '@/api/frankfurter';
+
+const circleFlagHeight = 24;
+
+let favouriteRates: Rate[] = [
+  {
+    base: "USD",
+    to: "SGD"
+  },
+  {
+    base: "USD",
+    to: "MYR"
+  },
+];
+
+let popularRates: Rate[] = [
+  {
+    base: "GBP",
+    to: "USD",
+  },
+  {
+    base: "EUR",
+    to: "USD",
+  },
+  {
+    base: "USD",
+    to: "INR"
+  },
+]
 
 function setFavouriteRateItem(favouriteRates: Rate[]) {
   if (favouriteRates.length > 0) {
     return favouriteRates.map((rate, index) => (
-      <Text key={index} style={styles.text}>
-        {rate.from_currency} to {rate.to_currency}: {rate.rate}
-      </Text>
+      <View key={index} style={styles.ratesRow}>
+        <View style={styles.rates}>
+          <CircleFlag countryCode={(rate.base.slice(0, 2).toLowerCase())} height={circleFlagHeight}></CircleFlag>
+          <CircleFlag countryCode={(rate.to.slice(0, 2).toLowerCase())} height={circleFlagHeight}></CircleFlag>
+        </View>
+        <View style={styles.rates}>
+          <Text style={styles.ratesText}>{rate.base} to {rate.to}</Text>
+          <Text style={styles.text}>1 {rate.base} = {1} {rate.to}</Text>
+        </View>
+      </View>
     ));
   }
   
   return (
-    <Text style={[styles.text, styles.favourites]}>
-      ⭐ You haven’t added any favourite rates yet.
-    </Text>
+    <View style={styles.rates}>
+      <Text style={styles.text}>
+        ⭐ You haven’t added any favourite rates yet.
+      </Text>
+    </View>
   );
 }
 
 function setPopularRateItem(popularRates: Rate[]) {
-  if (popularRates.length > 0) {
-    return popularRates.map((rate, index) => (
-      <View key={index} style={styles.ratesRow}>
-        <View style={styles.rates}>
-          <Text style={styles.text}>{rate.from_currency}</Text>
-          <Text style={styles.text}>{rate.to_currency}</Text>
-        </View>
-        <View style={styles.rates}>
-          <Text style={styles.text}>{rate.from_currency} to {rate.to_currency}</Text>
-          <Text style={styles.text}>1 {rate.from_currency} = {1*rate.rate} {rate.to_currency}</Text>
-        </View>
+  return popularRates.map((rate, index) => (
+    <View key={index} style={styles.ratesRow}>
+      <View style={styles.rates}>
+        <CircleFlag countryCode={(rate.base.slice(0, 2).toLowerCase())} height={circleFlagHeight}></CircleFlag>
+        <CircleFlag countryCode={(rate.to.slice(0, 2).toLowerCase())} height={circleFlagHeight}></CircleFlag>
       </View>
-    ))
-  }
-  return (
-    <Text style={[styles.text, styles.favourites]}>
-      ⭐ No popular rates were found.
-    </Text>
-  );
+      <View style={styles.rates}>
+        <Text style={styles.ratesText}>{rate.base} to {rate.to}</Text>
+        <Text style={styles.text}>1 {rate.base} = {1} {rate.to}</Text>
+      </View>
+    </View>
+  ));
 }
 
 export default function Index() {
-  let favouriteRates: Rate[] = [
-    { 
-      from_currency: 'USD',
-      to_currency: 'USD',
-      rate: 1.0,
-    },
-    { 
-      from_currency: 'EUR',
-      to_currency: 'EUR',
-      rate: 0.85,
-    },
-    { 
-      from_currency: 'GBP',
-      to_currency: 'EUR',
-      rate: 0.75,
-    },
-    { 
-      from_currency: 'JPY',
-      to_currency: 'JPY',
-      rate: 110.0,
-    },
-  ];
-
-  let popularRates: Rate[] = [
-    { 
-      from_currency: 'USD',
-      to_currency: 'USD',
-      rate: 1.0,
-    },
-    { 
-      from_currency: 'EUR',
-      to_currency: 'EUR',
-      rate: 0.85,
-    },
-    { 
-      from_currency: 'GBP',
-      to_currency: 'EUR',
-      rate: 0.75,
-    },
-    { 
-      from_currency: 'JPY',
-      to_currency: 'JPY',
-      rate: 110.0,
-    },
-  ];
-
   return (
     <View style={styles.main}>
       <Text style={[styles.text, styles.header]}>Favourites</Text>
-      <View style={styles.favouritesContainer}>
+      <View style={styles.ratesContainer}>
         {setFavouriteRateItem(favouriteRates)}
       </View>
       <Text style={[styles.text, styles.header]}>Popular</Text>
@@ -103,47 +90,35 @@ export default function Index() {
 const styles = StyleSheet.create({
   main: {
     flex: 1,
-    backgroundColor: '#323233',
+    backgroundColor: Colors.light.background,
     padding: 24,
     gap: 24,
   },
   text: {
     fontSize: 14,
-    color: '#fff',
+    color: Colors.light.text,
   },
   header: {
     paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#fff',
-  },
-  favouritesContainer: {
-    flexDirection: "column",
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: "#fff",
-    padding: 8,
-    marginBottom: 8,
-  },
-  favouritesRow: {
-    flexDirection: "row",
-  },
-  favourites: {
-    flexDirection: "column", 
-    padding: 24,
+    borderBottomWidth: 2,
+    borderBottomColor: Colors.light.icon,
   },
   ratesContainer: {
     flexDirection: "column",
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: "#fff",
-    padding: 8,
-    marginBottom: 8,
+    gap: 12,
+  },
+  ratesText: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
   ratesRow: {
     flexDirection: "row",
+    backgroundColor: Colors.light.cardBackground,
+    borderRadius: 8,
   },
   rates: {
     flexDirection: "column", 
     padding: 24,
+    gap: 8,
   },
 });
