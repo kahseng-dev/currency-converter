@@ -1,5 +1,5 @@
 export type Rate = {
-    base: string;
-    to: string;
-    rate?: number;
+    base?: string;
+    date?: string;
+    rates?: Record<string, number>;
 };
