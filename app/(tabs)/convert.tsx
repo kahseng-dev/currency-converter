@@ -13,7 +13,7 @@ let baseCurrency:string = 'GBP';
 let toCurrency:string = 'USD';
 let amount = 1000;
 
-export default function ConvertScreen() {
+export default function Convert() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<Rate>();

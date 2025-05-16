@@ -3,7 +3,7 @@ import { Colors } from '@/constants/Colors';
 
 const APP_VERSION:string = "0.1.0";
 
-export default function SettingsScreen() {
+export default function Settings() {
   return (
     <View style={styles.main}>
       <Text style={[styles.header, styles.text]}>Dark mode</Text>

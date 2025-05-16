@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet } from 'react-native';
 
-export default function WidgetsScreen() {
+export default function Widgets() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Widgets Screen</Text>
