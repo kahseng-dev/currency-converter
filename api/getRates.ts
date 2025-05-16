@@ -1,4 +1,4 @@
-import { Rate } from "@/types/rate";
+import type { RateAPI } from "@/types/RateAPI";
 
 const API_VERSION:string = "v1";
 const API_URL:string = `https://api.frankfurter.dev/${API_VERSION}`;
@@ -27,7 +27,7 @@ export async function getRates(base?: string, symbols?: string[], date?: string)
     throw new Error(`Failed to fetch data: ${response.status}`);
   }
 
-  const data = (await response.json()) as Rate;
+  const data = (await response.json()) as RateAPI;
   
   return data;
 }
