@@ -8,8 +8,7 @@ export default function Settings() {
     <View style={styles.main}>
       <Text style={[styles.header, styles.text]}>Dark mode</Text>
       <View>
-        <Pressable style={styles.themeSelectContainer} 
-          onPress={() => alert('You pressed a button.')}>
+        <Pressable style={styles.themeSelectContainer}>
           <Text style={[styles.themeOption, styles.themeOptionSelected]}>Auto</Text>
           <Text style={styles.themeOption}>On</Text>
           <Text style={styles.themeOption}>Off</Text>
