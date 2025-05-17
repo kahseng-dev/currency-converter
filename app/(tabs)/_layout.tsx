@@ -3,6 +3,8 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from '@/constants/Colors';
 
 export default function TabLayout() {
+  const iconSize = 24;
+
   return (
     <Tabs
       screenOptions={{
@@ -19,38 +21,50 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen 
-        name="index"
+        name='index'
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} color={color} size={24} />
+            <Ionicons 
+              name={focused ? 'home' : 'home-outline'} 
+              color={color} 
+              size={iconSize}/>
           ),
         }} 
       />
       <Tabs.Screen
-        name="convert" 
+        name='convert' 
         options={{
           title: 'Convert',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'swap-horizontal' : 'swap-horizontal-outline'} color={color} size={24}/>
+            <Ionicons 
+              name={focused ? 'swap-horizontal' : 'swap-horizontal-outline'} 
+              color={color} 
+              size={iconSize}/>
           ),
         }}
       />
       <Tabs.Screen
-        name="widgets" 
+        name='widgets' 
         options={{
           title: 'Widgets',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'grid' : 'grid-outline'} color={color} size={24}/>
+            <Ionicons 
+              name={focused ? 'grid' : 'grid-outline'} 
+              color={color} 
+              size={iconSize}/>
           ),
         }}
       />
       <Tabs.Screen
-        name="settings" 
+        name='settings' 
         options={{
           title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'settings' : 'settings-outline'} color={color} size={24}/>
+            <Ionicons 
+              name={focused ? 'settings' : 'settings-outline'} 
+              color={color} 
+              size={iconSize}/>
           ),
         }}
       />

@@ -1,27 +1,26 @@
-import { useEffect, useState } from "react";
-import { Text, View, Pressable, StyleSheet } from "react-native";
+import { useEffect, useState } from 'react';
+import { Text, View, Pressable, StyleSheet } from 'react-native';
 import { CircleFlag } from 'react-circle-flags'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Colors } from '@/constants/Colors';
-import { Rate } from "@/types/rate";
-import { getRates } from "@/api/getRates";
+import { RateAPI } from '@/types/RateAPI';
+import { getRates } from '@/api/getRates';
 
 const iconSize = 14;
 const circleFlagHeight = 24;
 
 let baseCurrency:string = 'GBP';
 let toCurrency:string = 'USD';
-let amount = 1000;
+let amount:number = 1000;
 
 export default function Convert() {
-
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<Rate>();
+  const [data, setData] = useState<RateAPI>();
 
   useEffect(() => {
     getRates(baseCurrency, [toCurrency])
     .then((response) => {
-      setData(response as Rate);
+      setData(response as RateAPI);
     })
     .finally(() => {
       setIsLoading(false)
@@ -30,38 +29,51 @@ export default function Convert() {
 
   let rate:number = data?.rates?.[toCurrency] ?? 0;
 
+  let baseCurrencyCountryCode = baseCurrency.slice(0, 2).toLowerCase();
+  let toCurrencyCountryCode = toCurrency.slice(0, 2).toLowerCase();
+  let baseAmountText = amount.toFixed(2);
+  let toAmountText = (amount * rate).toFixed(2);
+  let detailedText = `1 ${baseCurrency} = ${rate} ${toCurrency} at mid-market rate`;
+
   return (
     <View style={styles.main}>
-      <Pressable
-        style={styles.buttonContainer}
-        onPress={() => alert('You pressed a button.')}>
+      <Pressable style={styles.buttonContainer}>
           <View style={styles.buttonText}>
-            <CircleFlag countryCode={(baseCurrency.slice(0, 2).toLowerCase())} height={circleFlagHeight}></CircleFlag>
+            <CircleFlag 
+              countryCode={baseCurrencyCountryCode} 
+              height={circleFlagHeight}/>
             <Text style={styles.text}>
               {baseCurrency}
             </Text>
-            <Ionicons name="chevron-down" size={iconSize} color={Colors.light.text} />
+            <Ionicons 
+              name='chevron-down' 
+              size={iconSize} 
+              color={Colors.light.text}/>
           </View>
           <Text style={styles.text}>
-            {amount.toFixed(2)}
+            {baseAmountText}
           </Text>
       </Pressable>
-      <Pressable
-        style={styles.buttonContainer}
-        onPress={() => alert('You pressed a button.')}>
+      <Pressable style={styles.buttonContainer}>
           <View style={styles.buttonText}>
-            <CircleFlag countryCode={(toCurrency.slice(0, 2).toLowerCase())} height={circleFlagHeight}></CircleFlag>
+            <CircleFlag 
+              countryCode={toCurrencyCountryCode} 
+              height={circleFlagHeight}/>
             <Text style={styles.text}>
               {toCurrency}
             </Text>
-            <Ionicons name="chevron-down" size={iconSize} color={Colors.light.text} />
+            <Ionicons 
+              name='chevron-down' 
+              size={iconSize} 
+              color={Colors.light.text} 
+            />
           </View>
           <Text style={styles.text}>
-            {(amount * rate).toFixed(2)}
+            {toAmountText}
           </Text>
       </Pressable>
       <Text style={styles.span}>
-        1 {baseCurrency} = {rate} {toCurrency} at mid-market rate
+        {detailedText}
       </Text>
     </View>
   );

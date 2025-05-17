@@ -4,18 +4,32 @@ import { Colors } from '@/constants/Colors';
 const APP_VERSION:string = "0.1.0";
 
 export default function Settings() {
+  let appVersionText = `Version ${APP_VERSION}`;
+
   return (
     <View style={styles.main}>
-      <Text style={[styles.header, styles.text]}>Dark mode</Text>
+      <Text style={[styles.header, styles.text]}>
+        Dark mode
+      </Text>
       <View>
         <Pressable style={styles.themeSelectContainer}>
-          <Text style={[styles.themeOption, styles.themeOptionSelected]}>Auto</Text>
-          <Text style={styles.themeOption}>On</Text>
-          <Text style={styles.themeOption}>Off</Text>
+          <Text style={[styles.themeOption, styles.themeOptionSelected]}>
+            Auto
+          </Text>
+          <Text style={styles.themeOption}>
+            On
+          </Text>
+          <Text style={styles.themeOption}>
+            Off
+          </Text>
         </Pressable>
       </View>
-      <Text style={[styles.header, styles.text]}>General settings</Text>
-      <Text style={styles.text}>Version {APP_VERSION}</Text>
+      <Text style={[styles.header, styles.text]}>
+        General settings
+      </Text>
+      <Text style={styles.text}>
+        {appVersionText}
+      </Text>
     </View>
   );
 }
