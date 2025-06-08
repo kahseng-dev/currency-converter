@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { styles } from '@/constants/styles';
 
@@ -9,23 +9,41 @@ export default function Convert() {
   const [rate, setRate] = useState({base: 'USD', to: 'SGD'});
 
   return (
-    <View className='p-8 flex'>
-      <View className='border rounded'>
-        <Text style={styles.font_mono}>
-          {rate.base}
+    <View className='p-8 flex gap-8'>
+      <Pressable className='p-8 flex flex-row justify-between border-2 rounded-lg bg-white shadow'>
+        <View className='flex flex-row items-center gap-2'>
+          <Text
+            className='text-xl'
+            style={styles.font_mono}>
+            {rate.base}
+          </Text>
+          <Ionicons
+            name='chevron-down'
+            size={styles.icon} />
+        </View>
+        <Text
+          className='text-xl'
+          style={styles.font_mono}>
+          {amount}
         </Text>
-        <Ionicons
-          name='chevron-down'
-          size={styles.icon} />
-      </View>
-      <View className='border rounded'>
-        <Text style={styles.font_mono}>
-          {rate.to}
+      </Pressable>
+      <Pressable className='p-8 flex flex-row justify-between border-2 rounded-lg bg-white shadow'>
+        <View className='flex flex-row items-center gap-2'>
+          <Text
+            className='text-xl'
+            style={styles.font_mono}>
+            {rate.to}
+          </Text>
+          <Ionicons
+            name='chevron-down'
+            size={styles.icon} />
+        </View>
+        <Text
+          className='text-xl'
+          style={styles.font_mono}>
+          {amount}
         </Text>
-        <Ionicons
-          name='chevron-down'
-          size={styles.icon} />
-      </View>
+      </Pressable>
     </View>
   );
 }
