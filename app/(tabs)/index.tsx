@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { styles } from '@/constants/styles';
+
 export default function Index() {
 
   const [rates, setRates] = useState({
@@ -12,22 +14,34 @@ export default function Index() {
     if (rates.favourites.length === 0) {
       return (
         <View>
-          <Text>⭐ You haven’t added any favourite rates yet.</Text>
+          <Text style={styles.font_mono}>
+            ⭐ You haven’t added any favourite rates yet.
+          </Text>
         </View>
       )
     }
 
     return (
       <View className='flex gap-4'>
-        {rates.favourites.map(rate => 
-          <View className='p-4 flex flex-row gap-4 rounded bg-white shadow'>
+        {rates.favourites.map((rate, index) => 
+          <View 
+            key={index}
+            className='p-4 flex flex-row gap-4 rounded bg-white shadow'>
             <View>
-              <Text>{rate.base}</Text>
-              <Text>{rate.to}</Text>
+              <Text style={styles.font_mono}>
+                {rate.base}
+              </Text>
+              <Text style={styles.font_mono}>
+                {rate.to}
+              </Text>
             </View>
             <View>
-              <Text>{rate.base} to {rate.to}</Text>
-              <Text>1 {rate.base} = {1} {rate.to}</Text>
+              <Text style={styles.font_mono}>
+                {rate.base} to {rate.to}
+              </Text>
+              <Text style={styles.font_mono}>
+                1 {rate.base} = {1} {rate.to}
+              </Text>
             </View>
           </View>
         )}
@@ -38,15 +52,25 @@ export default function Index() {
   const loadPopular = () => {
     return (
       <View className='flex gap-4'>
-        {rates.popular.map(rate => 
-          <View className='p-4 flex flex-row gap-4 rounded bg-white shadow'>
+        {rates.popular.map((rate, index) => 
+          <View 
+            key={index}
+            className='p-4 flex flex-row gap-4 rounded bg-white shadow'>
             <View>
-              <Text>{rate.base}</Text>
-              <Text>{rate.to}</Text>
+              <Text style={styles.font_mono}>
+                {rate.base}
+              </Text>
+              <Text style={styles.font_mono}>
+                {rate.to}
+              </Text>
             </View>
             <View>
-              <Text>{rate.base} to {rate.to}</Text>
-              <Text>1 {rate.base} = {1} {rate.to}</Text>
+              <Text style={styles.font_mono}>
+                {rate.base} to {rate.to}
+              </Text>
+              <Text style={styles.font_mono}>
+                1 {rate.base} = {1} {rate.to}
+              </Text>
             </View>
           </View>
         )}
@@ -56,9 +80,13 @@ export default function Index() {
 
   return (
     <View className='p-8 flex gap-4'>
-      <Text className='text-xl border-b'>Favourites</Text>
+      <Text 
+        style={styles.font_mono}
+        className='text-xl border-b'>Favourites</Text>
       {loadFavourites()}
-      <Text className='text-xl border-b'>Popular</Text>
+      <Text 
+        style={styles.font_mono}
+        className='text-xl border-b'>Popular</Text>
       {loadPopular()}
     </View>
   );
