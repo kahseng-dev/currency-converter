@@ -1,9 +1,22 @@
-import { Text, View } from "react-native";
+import { Link, Stack } from 'expo-router';
+import { Text, View } from 'react-native';
+
+import { styles } from '@/constants/styles';
 
 export default function NotFound() {
   return (
-    <View className='flex items-center justify-center bg-black'>
-      <Text className='text-center'>Edit app/index.tsx to edit this screen.</Text>
-    </View>
+    <>
+      <Stack.Screen options={{ title: 'Not Found' }} />
+      <View className='flex-1 items-center justify-center'>
+        <Text className='text-center mb-4'>
+          404: Page Not Found
+        </Text>
+        <Link 
+          href='./'
+          className={styles.button} >
+          Go Home
+        </Link>
+      </View>
+    </>
   );
 }
