@@ -13,7 +13,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Ionicons 
               name={focused ? 'home' : 'home-outline'}
-              className={styles.icon} />
+              size={styles.icon} />
           ),
         }} />
       <Tabs.Screen
@@ -23,7 +23,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Ionicons 
               name={focused ? 'swap-horizontal' : 'swap-horizontal-outline'} 
-              className={styles.icon} />
+              size={styles.icon} />
           ),
         }} />
       <Tabs.Screen
@@ -33,7 +33,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Ionicons 
               name={focused ? 'grid' : 'grid-outline'} 
-              className={styles.icon} />
+              size={styles.icon} />
           ),
         }} />
       <Tabs.Screen
@@ -43,7 +43,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <Ionicons 
               name={focused ? 'settings' : 'settings-outline'} 
-              className={styles.icon} />
+              size={styles.icon} />
           ),
         }} />
     </Tabs>
