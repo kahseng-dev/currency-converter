@@ -6,7 +6,7 @@ import { styles } from '@/constants/styles';
 
 export default function Convert() {
   const [amount, setAmount] = useState(1000);
-  const [rate, setRate] = useState({base: 'USD', to: 'SGD'});
+  const [rate, setRate] = useState({base: 'USD', to: 'SGD', rate: 0});
 
   return (
     <View className='p-8 flex gap-8'>
@@ -44,6 +44,11 @@ export default function Convert() {
           {amount}
         </Text>
       </Pressable>
+      <Text 
+        className='text-center'
+        style={styles.font_mono}>
+        1 {rate.base} = {rate.rate} {rate.to} at mid-market rate
+      </Text>
     </View>
   );
 }
