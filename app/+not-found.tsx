@@ -8,11 +8,14 @@ export default function NotFound() {
     <>
       <Stack.Screen options={{ title: 'Not Found' }} />
       <View className='flex-1 items-center justify-center'>
-        <Text className='text-center mb-4'>
+        <Text 
+          style={styles.font_mono}
+          className='text-center mb-4'>
           404: Page Not Found
         </Text>
         <Link 
           href='./'
+          style={styles.font_mono}
           className={styles.button} >
           Go Home
         </Link>
