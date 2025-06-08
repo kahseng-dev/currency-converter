@@ -10,4 +10,8 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  corePlugins: {
+    borderOpacity: true,
+    backgroundOpacity: true,
+  },
 }
