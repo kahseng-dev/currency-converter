@@ -78,7 +78,7 @@ export default function AddFavourites() {
 
   return (
     <ScrollView className='p-4'>
-      <View className='flex gap-4 mb-24'>
+      <View className='flex gap-4'>
         <View className='flex gap-2'>
           <Pressable className='p-4 rounded border border-neutral-300 bg-white'>
             { from ? 
@@ -124,22 +124,27 @@ export default function AddFavourites() {
               size={styles.icon} />
           </Pressable>
         </View>
-        <View>
+        <View className={(from && to) && 'hidden'}>
           <Text 
             style={styles.font_mono}
             className='mb-4 py-1 border-b border-neutral-300 text-neutral-700'>
-              Suggested currencies
+            Suggested currencies
           </Text>
           {loadSuggestedCurrencies()}
-        </View>
-        <View>
           <Text 
             style={styles.font_mono}
-            className='mb-4 py-1 border-b border-neutral-300 text-neutral-700'>
-              All currencies
+            className='my-4 py-1 border-b border-neutral-300 text-neutral-700'>
+            All currencies
           </Text>
           {loadAllCurrencies()}
         </View>
+        <Pressable>
+          <Text 
+            style={styles.font_mono}
+            className='p-2 rounded text-center bg-blue-500 text-white'>
+            Add {from} to {to}
+          </Text>
+        </Pressable>
       </View>
     </ScrollView>
   );
