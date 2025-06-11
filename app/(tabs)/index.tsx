@@ -1,6 +1,8 @@
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
+
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from '@/constants/styles';
 
@@ -87,13 +89,27 @@ export default function Index() {
 
   return (
     <View className='p-8 flex gap-4'>
+      <View className='flex flex-row justify-between'>
+        <Text 
+          style={styles.font_mono}
+          className='text-xl'>
+            Rates
+        </Text>
+        <Link 
+          href='/add-favourites'
+          className='size-8 flex items-center justify-center rounded-full bg-neutral-300'>
+          <Ionicons 
+            name='add-outline'
+            size={styles.icon} />
+        </Link>
+      </View>
       <Text 
         style={styles.font_mono}
-        className='text-xl border-b'>Favourites</Text>
+        className='py-1 border-b'>Favourites</Text>
       {loadFavourites()}
       <Text 
         style={styles.font_mono}
-        className='text-xl border-b'>Popular</Text>
+        className='py-1 border-b'>Popular</Text>
       {loadPopular()}
     </View>
   );

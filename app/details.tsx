@@ -1,6 +1,7 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams } from 'expo-router';
 import { Text, View } from 'react-native';
+
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from '@/constants/styles';
 
