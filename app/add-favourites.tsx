@@ -18,6 +18,7 @@ export default function AddFavourites() {
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState([...currencies.all]);
+  const [changeField, setChangeField] = useState('from');
 
   const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
 
@@ -61,13 +62,25 @@ export default function AddFavourites() {
     )
   }
 
-  const handleCurrencyPress = (currency: string) => {
+  const handleCurrencyPress = (currency: string, field?:string) => {
     if (!from) {
       return setFrom(currency)
     }
 
     if (!to) {
       return setTo(currency)
+    }
+
+    if (field) {
+      switch(field) {
+        case 'from':
+          setFrom(currency);
+
+        case 'to':
+          setTo(currency);
+      }
+
+      return setShowSearchInput(false);
     }
 
     return
@@ -83,13 +96,14 @@ export default function AddFavourites() {
   const handleChangeSelection = (field: string) => {
     switch(field) {
       case "to":
-        setTo('')
+        setChangeField('to');
         break
 
       case "to":
-        setFrom('')
+        setChangeField('from');
         break
     }
+
     return setShowSearchInput(true);
   }
 
@@ -121,17 +135,22 @@ export default function AddFavourites() {
       <View className='flex gap-4'>
         { showSearchInput && 
           <View>
-            <TextInput 
-              onChangeText={input => handleSearch(input)}
-              placeholder='Type a currency'
-              value={searchInput}
-              style={styles.font_mono}
-              className='p-4 mb-4 rounded border border-neutral-300 bg-white placeholder:text-neutral-500' />
+            <View className='flex flex-row gap-2 p-4 mb-4 rounded border border-neutral-300 bg-white'>
+              <Ionicons 
+                name='search-outline'
+                size={styles.icon} />
+              <TextInput 
+                onChangeText={input => handleSearch(input)}
+                placeholder='Type a currency'
+                value={searchInput}
+                style={styles.font_mono}
+                className='w-full placeholder:text-neutral-500 outline-none' />
+            </View>
             <FlatList 
               data={searchResults}
               renderItem={currency => 
                 <Pressable 
-                  onPress={() => handleCurrencyPress(currency.item)}
+                  onPress={() => handleCurrencyPress(currency.item, changeField)}
                   key={currency.index}
                   className='p-2 flex flex-row gap-4 hover:bg-neutral-300'>
                   <Text style={styles.font_mono}>{currency.item}</Text>
