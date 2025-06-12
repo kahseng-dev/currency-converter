@@ -29,12 +29,12 @@ export default function Index() {
     }
 
     return (
-      <View className='flex gap-4'>
+      <View>
         {rates.favourites.map((rate, index) => 
           <Pressable
             onPress={() => handleViewDetails(rate.base, rate.to)}
             key={index}
-            className='p-4 flex flex-row gap-4 rounded bg-white shadow'>
+            className='p-4 flex flex-row gap-4 hover:bg-neutral-300'>
             <View>
               <Text style={styles.font_mono}>
                 {rate.base}
@@ -47,7 +47,9 @@ export default function Index() {
               <Text style={styles.font_mono}>
                 {rate.base} to {rate.to}
               </Text>
-              <Text style={styles.font_mono}>
+              <Text 
+                className='text-neutral-500'
+                style={styles.font_mono}>
                 1 {rate.base} = {1} {rate.to}
               </Text>
             </View>
@@ -59,12 +61,12 @@ export default function Index() {
 
   const loadPopular = () => {
     return (
-      <View className='flex gap-4'>
+      <View>
         {rates.popular.map((rate, index) => 
           <Pressable
             onPress={() => handleViewDetails(rate.base, rate.to)}
             key={index}
-            className='p-4 flex flex-row gap-4 rounded bg-white shadow'>
+            className='p-4 flex flex-row gap-4 hover:bg-neutral-300'>
             <View>
               <Text style={styles.font_mono}>
                 {rate.base}
@@ -77,7 +79,9 @@ export default function Index() {
               <Text style={styles.font_mono}>
                 {rate.base} to {rate.to}
               </Text>
-              <Text style={styles.font_mono}>
+              <Text 
+                className='text-neutral-500'
+                style={styles.font_mono}>
                 1 {rate.base} = {1} {rate.to}
               </Text>
             </View>
@@ -88,7 +92,7 @@ export default function Index() {
   }
 
   return (
-    <View className='p-8 flex gap-4'>
+    <View className='p-8 flex gap-4 bg-white h-screen'>
       <View className='flex flex-row justify-between'>
         <Text 
           style={styles.font_mono}
@@ -105,11 +109,11 @@ export default function Index() {
       </View>
       <Text 
         style={styles.font_mono}
-        className='py-1 border-b'>Favourites</Text>
+        className='py-1 border-b border-neutral-300'>Favourites</Text>
       {loadFavourites()}
       <Text 
         style={styles.font_mono}
-        className='py-1 border-b'>Popular</Text>
+        className='py-1 border-b border-neutral-300'>Popular</Text>
       {loadPopular()}
     </View>
   );
