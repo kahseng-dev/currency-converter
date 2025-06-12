@@ -1,38 +1,64 @@
+import { Link } from 'expo-router';
+import { useState } from 'react';
+import { Text, View } from 'react-native';
+
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+import ToggleGroup from '@/components/toggle-group';
 import { styles } from '@/constants/styles';
-import { Pressable, Text, View } from 'react-native';
 
 export default function Settings() {
   const APP_VERSION: string = '0.1.0';
 
+  const [theme, setTheme] = useState('auto');
+
   return (
-    <View className='p-8 flex gap-8'>
+    <View className='p-8 flex gap-4'>
       <Text 
         style={styles.font_mono}
-        className='border-b'>
+        className='py-1 border-b border-neutral-300'>
         Dark mode
       </Text>
-      <Pressable className='p-2 flex gap-2 flex-row justify-evenly bg-white rounded shadow'>
-        <Text 
-          style={styles.font_mono}
-          className='py-2 w-1/3 bg-black/20 rounded text-center transition duration-300 hover:bg-black/20'>
-          Auto
-        </Text>
-        <Text 
-          style={styles.font_mono}
-          className='py-2 w-1/3 rounded text-center transition duration-300 hover:bg-black/20'>
-          On
-        </Text>
-        <Text 
-          style={styles.font_mono}
-          className='py-2 w-1/3 rounded text-center transition duration-300 hover:bg-black/20'>
-          Off
-        </Text>
-      </Pressable>
+      <ToggleGroup setValue={setTheme} value={theme} options={['auto', 'dark', 'light']} />
       <Text 
         style={styles.font_mono}
-        className='border-b'>
+        className='py-1 border-b border-neutral-300'>
         General settings
       </Text>
+      <View className='flex'>
+        <Link 
+          href='https://github.com/kahseng-dev/currency-converter'
+          target='_blank'
+          className='py-2 flex flex-row justify-between' >
+          <View className='flex flex-row gap-2 items-center'>
+            <View className='size-8 flex items-center justify-center rounded-full bg-neutral-300'>
+              <Ionicons 
+                name='logo-github'
+                size={styles.icon} />
+            </View>
+            <Text style={styles.font_mono}>Github Repo</Text>
+          </View>
+          <Ionicons 
+            name='chevron-forward-outline'
+            size={styles.icon} />
+        </Link>
+        <Link 
+          href='https://kahseng.is-a.dev/'
+          target='_blank'
+          className='py-2 flex flex-row justify-between'>
+          <View className='flex flex-row gap-2 items-center'>
+            <View className='size-8 flex items-center justify-center rounded-full bg-neutral-300'>
+              <Ionicons 
+                name='person-outline'
+                size={styles.icon} />
+            </View>
+            <Text style={styles.font_mono}>Checkout my other projects</Text>
+          </View>
+          <Ionicons 
+            name='chevron-forward-outline'
+            size={styles.icon} />
+        </Link>
+      </View>
       <Text style={styles.font_mono}>
         Version {APP_VERSION}
       </Text>
