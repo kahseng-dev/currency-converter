@@ -27,16 +27,6 @@ export default function TabLayout() {
           ),
         }} />
       <Tabs.Screen
-        name='widgets' 
-        options={{
-          title: 'Widgets',
-          tabBarIcon: ({ focused }) => (
-            <Ionicons 
-              name={focused ? 'grid' : 'grid-outline'} 
-              size={styles.icon} />
-          ),
-        }} />
-      <Tabs.Screen
         name='settings' 
         options={{
           title: 'Settings',
