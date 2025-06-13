@@ -9,9 +9,16 @@ import { styles } from '@/constants/styles';
 export default function Index() {
 
   const [rates, setRates] = useState({
-    favourites: [{base: 'USD', to: 'SGD'}, {base: 'USD', to: 'MYR'}],
-    popular: [{base: 'GBP', to: 'USD'}, {base: 'EUR', to: 'USD'}, {base: 'USD', to: 'INR'}],
-  });
+    favourites: [
+      {base: 'USD', to: 'SGD'}, 
+      {base: 'USD', to: 'MYR'},
+    ],
+    popular: [
+      {base: 'GBP', to: 'USD'}, 
+      {base: 'EUR', to: 'USD'}, 
+      {base: 'USD', to: 'INR'},
+    ],
+  })
 
   const handleViewDetails = (base: string, to: string) => {
     return router.push({ pathname: '/details', params: { base, to } });
@@ -30,23 +37,17 @@ export default function Index() {
 
     return (
       <View>
-        {rates.favourites.map((rate, index) => 
+        { rates.favourites.map((rate, index) => 
           <Pressable
             onPress={() => handleViewDetails(rate.base, rate.to)}
             key={index}
             className='p-4 flex flex-row gap-4 hover:bg-neutral-300'>
             <View>
-              <Text style={styles.font_mono}>
-                {rate.base}
-              </Text>
-              <Text style={styles.font_mono}>
-                {rate.to}
-              </Text>
+              <Text style={styles.font_mono}>{rate.base}</Text>
+              <Text style={styles.font_mono}>{rate.to}</Text>
             </View>
             <View>
-              <Text style={styles.font_mono}>
-                {rate.base} to {rate.to}
-              </Text>
+              <Text style={styles.font_mono}>{rate.base} to {rate.to}</Text>
               <Text 
                 className='text-neutral-500'
                 style={styles.font_mono}>
@@ -62,23 +63,17 @@ export default function Index() {
   const loadPopular = () => {
     return (
       <View>
-        {rates.popular.map((rate, index) => 
+        { rates.popular.map((rate, index) => 
           <Pressable
             onPress={() => handleViewDetails(rate.base, rate.to)}
             key={index}
             className='p-4 flex flex-row gap-4 hover:bg-neutral-300'>
             <View>
-              <Text style={styles.font_mono}>
-                {rate.base}
-              </Text>
-              <Text style={styles.font_mono}>
-                {rate.to}
-              </Text>
+              <Text style={styles.font_mono}>{rate.base}</Text>
+              <Text style={styles.font_mono}>{rate.to}</Text>
             </View>
             <View>
-              <Text style={styles.font_mono}>
-                {rate.base} to {rate.to}
-              </Text>
+              <Text style={styles.font_mono}>{rate.base} to {rate.to}</Text>
               <Text 
                 className='text-neutral-500'
                 style={styles.font_mono}>
@@ -109,11 +104,15 @@ export default function Index() {
       </View>
       <Text 
         style={styles.font_mono}
-        className='py-1 border-b border-neutral-300'>Favourites</Text>
+        className='py-1 border-b border-neutral-300'>
+        Favourites
+      </Text>
       {loadFavourites()}
       <Text 
         style={styles.font_mono}
-        className='py-1 border-b border-neutral-300'>Popular</Text>
+        className='py-1 border-b border-neutral-300'>
+        Popular
+      </Text>
       {loadPopular()}
     </View>
   );
