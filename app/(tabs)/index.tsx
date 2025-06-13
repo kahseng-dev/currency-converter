@@ -1,24 +1,37 @@
 import { Link, router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from '@/constants/styles';
+import { getRates } from '@/services/get-rates';
 
 export default function Index() {
 
-  const [rates, setRates] = useState({
-    favourites: [
-      {base: 'USD', to: 'SGD'}, 
-      {base: 'USD', to: 'MYR'},
-    ],
-    popular: [
-      {base: 'GBP', to: 'USD'}, 
-      {base: 'EUR', to: 'USD'}, 
-      {base: 'USD', to: 'INR'},
-    ],
-  })
+  type Rate = { base: string; to: string; rate: number };
+
+  const [rates, setRates] = useState<{favourites: Rate[], popular: Rate[]}>(
+    {
+      favourites: [
+        { base: 'USD', to: 'SGD', rate: 0 }, 
+        { base: 'USD', to: 'GBP', rate: 0 },
+      ],
+      popular: [
+        { base: 'GBP', to: 'USD', rate: 0 }, 
+        { base: 'EUR', to: 'USD', rate: 0 }, 
+        { base: 'USD', to: 'INR', rate: 0 },
+      ],
+    }
+  )
+
+  const [data, setData] = useState<any>();
+
+  useEffect(() => {
+    if (!data) {
+      getRates([...rates.favourites, ...rates.popular]).then(setData);
+    }
+  }, []);
 
   const handleViewDetails = (base: string, to: string) => {
     return router.push({ pathname: '/details', params: { base, to } });
@@ -51,7 +64,7 @@ export default function Index() {
               <Text 
                 className='text-neutral-500'
                 style={styles.font_mono}>
-                1 {rate.base} = {1} {rate.to}
+                1 {rate.base} = {rate.rate} {rate.to}
               </Text>
             </View>
           </Pressable>
@@ -77,7 +90,7 @@ export default function Index() {
               <Text 
                 className='text-neutral-500'
                 style={styles.font_mono}>
-                1 {rate.base} = {1} {rate.to}
+                1 {rate.base} = {rate.rate} {rate.to}
               </Text>
             </View>
           </Pressable>
