@@ -1,7 +1,7 @@
 const API_VERSION:string = 'v1';
 const API_URL:string = `https://api.frankfurter.dev/${API_VERSION}`;
 
-type RateAPI = {
+export type RateAPI = {
     base?: string;
     date?: string;
     rates?: Record<string, number>;
