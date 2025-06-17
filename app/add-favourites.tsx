@@ -16,6 +16,8 @@ export default function AddFavourites() {
   };
 
   const [showSearchInput, setShowSearchInput] = useState(false);
+  const [showAddButton, setShowAddButton] = useState(false);
+
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState([...currencies.all]);
   const [changeField, setChangeField] = useState('from');
@@ -63,11 +65,11 @@ export default function AddFavourites() {
   }
 
   const handleCurrencyPress = (currency: string, field?:string) => {
-    if (!from) {
+    if (!from && !field) {
       return setFrom(currency)
     }
 
-    if (!to) {
+    if (!to && !field) {
       return setTo(currency)
     }
 
@@ -80,10 +82,14 @@ export default function AddFavourites() {
           setTo(currency);
       }
 
-      return setShowSearchInput(false);
+      return setShowSearchInput(false)
     }
 
-    return
+    if (from && to) {
+      return setShowAddButton(true)
+    }
+
+    return setShowAddButton(false)
   }
 
   const handleSwapFieldsPress = () => {
@@ -212,28 +218,31 @@ export default function AddFavourites() {
               size={styles.icon} />
           </Pressable>
         </View>
-        <View className={`${showSearchInput && 'hidden'}`}>
-          <Text 
-            style={styles.font_mono}
-            className='mb-2 py-1 border-b border-neutral-300 text-neutral-700'>
-            Suggested currencies
-          </Text>
-          {loadSuggestedCurrencies()}
-          <Text 
-            style={styles.font_mono}
-            className='mt-4 mb-2 py-1 border-b border-neutral-300 text-neutral-700'>
-            All currencies
-          </Text>
-          {loadAllCurrencies()}
-          <Pressable
-            onPress={handleAddRate}>
+        { !showSearchInput && 
+          <View>
+            <Text 
+              style={styles.font_mono}
+              className='mb-2 py-1 border-b border-neutral-300 text-neutral-700'>
+              Suggested currencies
+            </Text>
+            {loadSuggestedCurrencies()}
+            <Text 
+              style={styles.font_mono}
+              className='mt-4 mb-2 py-1 border-b border-neutral-300 text-neutral-700'>
+              All currencies
+            </Text>
+            {loadAllCurrencies()}
+          </View>
+        }
+        { showAddButton &&
+          <Pressable onPress={handleAddRate}>
             <Text 
               style={styles.font_mono}
               className='p-2 rounded text-center bg-blue-500 text-white'>
               Add {from} to {to}
             </Text>
           </Pressable>
-        </View>
+        }
       </View>
     </ScrollView>
   );
