@@ -22,7 +22,7 @@ export default function ToggleGroup({
         <Pressable 
           onPress={() => handleChangeOption(option)}
           key={option}
-          className={`${(value == option) && 'bg-white'} p-2 w-1/3 rounded-full transition duration-300`}>
+          className={`${(value == option) && 'bg-white'} w-1/${options.length} p-2 rounded-full transition duration-300`}>
           <Text 
             style={styles.font_mono}
             className='text-center'>{option}</Text>

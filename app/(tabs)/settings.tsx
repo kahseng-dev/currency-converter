@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import ToggleGroup from '@/components/toggle-group';
+import SegmentedControls from '@/components/segmented-controls';
 import { styles } from '@/constants/styles';
 
 export default function Settings() {
@@ -19,7 +19,10 @@ export default function Settings() {
         className='py-1 border-b border-neutral-300'>
         Dark mode
       </Text>
-      <ToggleGroup setValue={setTheme} value={theme} options={['auto', 'dark', 'light']} />
+      <SegmentedControls 
+        options={['auto', 'dark', 'light']} 
+        setValue={setTheme} 
+        value={theme} />
       <Text 
         style={styles.font_mono}
         className='py-1 border-b border-neutral-300'>
