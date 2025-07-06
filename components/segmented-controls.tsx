@@ -2,7 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import { styles } from '@/constants/styles';
 
-export default function ToggleGroup({ 
+export default function SegmentedControls({ 
     options, 
     setValue, 
     value 
@@ -17,12 +17,12 @@ export default function ToggleGroup({
   }
 
   return (
-    <View className='p-1 flex flex-row bg-neutral-300 rounded-full'>
-      { options.map(option => 
+    <View className='p-1 grid grid-flow-col gap-1 bg-neutral-300 rounded-full'>
+      { options.map(option =>
         <Pressable 
           onPress={() => handleChangeOption(option)}
           key={option}
-          className={`${(value == option) && 'bg-white'} w-1/${options.length} p-2 rounded-full transition duration-300`}>
+          className={`${(value == option) && 'bg-white'} p-2 rounded-full transition duration-300`}>
           <Text 
             style={styles.font_mono}
             className='text-center'>{option}</Text>
