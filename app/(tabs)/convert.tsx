@@ -1,17 +1,35 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 import { styles } from '@/constants/styles';
+import { getStore, setStore } from '@/services/async-stores';
 import { Rate } from '@/types/rate';
 
 export default function Convert() {
   const [amount, setAmount] = useState(1000);
   const [rate, setRate] = useState<Rate>({ base: 'USD', to: 'SGD', rate: 0 });
 
+  const storeKeyChangeField = 'convert-change-field';
+  const storeKeyBase = 'convert-field-base';
+  const storeKeyTo = 'convert-field-to';
+
+  const fetchStoredCurrencies = async () => {
+    const storedBase = await getStore(storeKeyBase);
+    const storedTo = await getStore(storeKeyTo);
+
+    setRate(previous => ({
+      ...previous,
+      base: storedBase || previous.base,
+      to: storedTo || previous.to
+    }));
+  };
+
   const handleChangeCurrency = (field:string) => {
-    return router.push({ pathname: '/choose-currency', params: { field } });
+    setStore(storeKeyChangeField, field);
+    return router.push({ pathname: '/choose-currency' });
   }
 
   const handleSwapFieldsPress = () => {
@@ -21,6 +39,10 @@ export default function Convert() {
       rate: previous.rate
     }));
   }
+
+  useEffect(() => {
+    fetchStoredCurrencies();
+  }, []);
 
   return (
     <View className='p-8 relative flex gap-4'>

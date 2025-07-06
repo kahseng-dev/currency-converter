@@ -1,11 +1,13 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from '@/constants/styles';
+import { getStore, setStore } from '@/services/async-stores';
 
-export default function ChooseCurrency({ field }: { field: string }) {
+export default function ChooseCurrency() {
 
   const rate = { base: 'USD', to: 'SGD', rate: 0 };
 
@@ -20,9 +22,29 @@ export default function ChooseCurrency({ field }: { field: string }) {
 
   const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
 
-  const handleCurrencyPress = (currency: string) => {
+  const handleCurrencyPress = async (currency: string) => {
+    const storeKeyChangeField = 'convert-change-field';
+    const storeKeyBase = 'convert-field-base';
+    const storeKeyTo = 'convert-field-to';
+
     setSearchInput('');
-    return setSelectedCurrency(currency)
+    setSelectedCurrency(currency);
+    
+    let field = await getStore(storeKeyChangeField);
+
+    if (!field) {
+      return router.push({ pathname: '/convert' });
+    }
+
+    if (field === 'base') {
+      setStore(storeKeyBase, currency);
+    }
+
+    if (field === 'to') {
+      setStore(storeKeyTo, currency);
+    }
+
+    return router.push({ pathname: '/convert' });
   }
 
   const loadSuggestedCurrencies = () => {
