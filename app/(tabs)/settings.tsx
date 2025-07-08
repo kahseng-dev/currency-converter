@@ -28,12 +28,12 @@ export default function Settings() {
         className='py-1 border-b border-neutral-300'>
         General settings
       </Text>
-      <View className='flex'>
+      <View className='flex gap-2'>
         <Link 
           href='https://github.com/kahseng-dev/currency-converter'
           target='_blank'
-          className='py-2 flex flex-row justify-between' >
-          <View className='flex flex-row gap-2 items-center'>
+          className='p-1.5 flex justify-between items-center rounded-full hover:bg-neutral-200 transition duration-300' >
+          <View className='gap-2 flex-row items-center'>
             <View className='size-8 flex items-center justify-center rounded-full bg-neutral-300'>
               <Ionicons 
                 name='logo-github'
@@ -48,8 +48,8 @@ export default function Settings() {
         <Link 
           href='https://kahseng.is-a.dev/'
           target='_blank'
-          className='py-2 flex flex-row justify-between'>
-          <View className='flex flex-row gap-2 items-center'>
+          className='p-1.5 flex justify-between items-center rounded-full hover:bg-neutral-200 transition duration-300'>
+          <View className='gap-2 flex-row items-center'>
             <View className='size-8 flex items-center justify-center rounded-full bg-neutral-300'>
               <Ionicons 
                 name='person-outline'
