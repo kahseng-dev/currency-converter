@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { styles } from '@/constants/styles';
+import { setStore } from '@/services/async-stores';
 
 export default function Details() {
   const { base, to } = useLocalSearchParams<{base:string, to:string}>();
@@ -76,6 +77,15 @@ export default function Details() {
   const handleChangeTimeframeOption = (index: number) => {
     return setSelectedTimeframeOption(index);
   };
+
+  const handleConvertCurrency = () => {
+    const storeKeyBase = 'convert-field-base';
+    const storeKeyTo = 'convert-field-to';
+    setStore(storeKeyBase, base);
+    setStore(storeKeyTo, to);
+
+    return router.push({ pathname: '/convert' });
+  }
 
   return (
     <View className='p-8 flex gap-4'>
@@ -153,6 +163,17 @@ export default function Details() {
             </Pressable>
           )}
         </View>
+      </View>
+      <View className='border border-neutral-500 bg-transparent hover:bg-neutral-300 transition duration-300'>
+        <Pressable 
+          onPress={handleConvertCurrency}
+          className='p-4'>
+          <Text 
+            style={styles.font_mono}
+            className='text-sm text-center'>
+            Convert {base} to {to}
+          </Text>
+        </Pressable>
       </View>
     </View>
   );
