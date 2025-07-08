@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from '@/constants/styles';
 import { getStore, setStore } from '@/services/async-stores';
+import { getRate } from '@/services/get-rates';
 import { Rate } from '@/types/rate';
 
 export default function Convert() {
@@ -42,6 +43,10 @@ export default function Convert() {
 
   useEffect(() => {
     fetchStoredCurrencies();
+
+    if (!rate.rate) {
+      getRate(rate).then(setRate);
+    }
   }, []);
 
   return (
