@@ -8,30 +8,73 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { styles } from '@/constants/styles';
 
 export default function Details() {
-  const [selectedTimeframeOptionIndex, setSelectedTimeframeOptionIndex] = useState(0);
-
   const { base, to } = useLocalSearchParams<{base:string, to:string}>();
+
+  const [detailsSpan, setDetailsSpan] = useState('');
+  const [selectedTimeframeOption, setSelectedTimeframeOption] = useState(0);
 
   const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
   const data = [{
-    'date': '12 March 2023',
+    'date': '2023-03-12',
     'rate': 2,
   },
   {
-    'date': '23 March 2023',
+    'date': '2023-03-23',
     'rate': 1.75,
   },
   {
-    'date': '27 March 2023',
+    'date': '2023-03-27',
     'rate': 1,
   },
   {
-    'date': '31 March 2023',
+    'date': '2023-03-31',
     'rate': 1.5,
   },];
-  const timeframeOptions = ['D', 'W', 'M', '6M', '1Y', '5Y'];
+  const timeframeOptions = ['W', 'M', '6M', '1Y', '5Y'];
+
+  const CustomActiveDot = (props:any) => {
+    const { cx, cy, payload } = props;
+    
+    return (
+      <circle
+        onMouseDown={() => handleActiveDotMouseDown(payload)}
+        onMouseUp={handleActiveDotMouseUp}
+        className='cursor-pointer stroke-white stroke-2 fill-green-700'
+        cx={cx}
+        cy={cy}
+        r={8} />
+  )};
+
+  const handleActiveDotMouseDown = (data: { date:string, rate:number }) => {
+    let date = new Date(data.date);
+
+    switch (selectedTimeframeOption) {
+      case 0: // Week
+        return setDetailsSpan(date.toLocaleDateString('en-GB', {
+          weekday: "long",
+        }));
+      case 1: // 1 Month
+      case 2: // 6 Months
+      case 3: // 1 Year
+        return setDetailsSpan(date.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'long',
+        }));
+      default:
+        return setDetailsSpan(date.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        }));
+    }
+  };
+
+  const handleActiveDotMouseUp = () => {
+    return setDetailsSpan('');
+  };
 
   const handleChangeTimeframeOption = (index: number) => {
+    return setSelectedTimeframeOption(index);
   };
 
   return (
@@ -45,7 +88,7 @@ export default function Details() {
           </Text>
           <Text 
             style={styles.font_mono}
-            className={styles.text_muted}>
+            className={`text-sm ${styles.text_muted}`}>
             {currencyName.of(base)} to {currencyName.of(to)}
           </Text>
         </View>
@@ -56,13 +99,19 @@ export default function Details() {
           className='text-xl'>
           1 {base} = 0 {to}
         </Text>
-        <Text 
-          className={`flex items-center gap-2 ${styles.text_trending_up}`}
-          style={styles.font_mono}>
-          <Ionicons 
-            name='trending-up-outline'
-            size={styles.icon} />
-          Up by 0% ({0} {base})
+        <Text style={styles.font_mono}>
+          { detailsSpan ? 
+            <Text className={`text-sm ${styles.text_muted}`}>
+              {detailsSpan}
+            </Text>
+            :
+            <Text className={`text-sm flex gap-2 items-center ${styles.text_trending_up}`}>
+              <Ionicons 
+                name='trending-up-outline'
+                size={styles.icon} />
+              Up by 0% ({0} {base})
+            </Text>
+          }
         </Text>
       </View>
       <View>
@@ -71,17 +120,27 @@ export default function Details() {
           width='100%'>
           <LineChart
             data={data}
-            style={styles.font_mono}>
+            style={styles.font_mono}
+            margin={{ top: 20, right: 5, left: 10, bottom: 5 }}>
             <CartesianGrid strokeDasharray='5 5' />
             <Line 
               stroke={'green'}
               type='monotone'
               dataKey='rate'
               strokeWidth={2}
-              name='Rate' />
+              dot={false}
+              activeDot={<CustomActiveDot />}
+              name={`1 ${base}`} />
             <YAxis orientation='right' />
             <XAxis dataKey='date' tick={false} />
-            <Tooltip />
+            <Tooltip 
+              labelFormatter={ label => `${new Date(label).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              })}`}
+              formatter={ value => `${value} ${to}` }
+              separator=' = ' />
           </LineChart>
         </ResponsiveContainer>
         <View className='grid grid-flow-col items-center gap-2'>
@@ -89,7 +148,7 @@ export default function Details() {
             <Pressable 
               key={option}
               onPress={() => handleChangeTimeframeOption(index)}
-              className={`${(selectedTimeframeOptionIndex == index) && 'bg-neutral-300'} items-center p-2 rounded transition duration-300 hover:bg-neutral-400`}>
+              className={`${(selectedTimeframeOption == index) && 'bg-neutral-300'} items-center p-2 rounded transition duration-300 hover:bg-neutral-400`}>
               <Text style={styles.font_mono}>{option}</Text>
             </Pressable>
           )}
