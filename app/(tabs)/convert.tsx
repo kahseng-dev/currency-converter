@@ -10,12 +10,13 @@ import { getRate } from '@/services/get-rates';
 import { Rate } from '@/types/rate';
 
 export default function Convert() {
-  const [amount, setAmount] = useState(1000);
   const [rate, setRate] = useState<Rate>({ base: 'USD', to: 'SGD', rate: 0 });
-
-  const storeKeyChangeField = 'convert-change-field';
-  const storeKeyBase = 'convert-field-base';
-  const storeKeyTo = 'convert-field-to';
+  const [baseAmount, setBaseAmount] = useState<string>('1000');
+  const [toAmount, setToAmount] = useState<string>((Number(baseAmount) * rate.rate).toString());
+  
+  const storeKeyChangeField:string = 'convert-change-field';
+  const storeKeyBase:string = 'convert-field-base';
+  const storeKeyTo:string = 'convert-field-to';
 
   const fetchStoredCurrencies = async () => {
     const storedBase = await getStore(storeKeyBase);
@@ -28,12 +29,54 @@ export default function Convert() {
     }));
   };
 
+  const handleChangeBaseAmount = (text:string) => {
+    text = text.replace(/[^0-9.]/g, '');
+    const amount = Number(text);
+
+    if (!text && !text.endsWith('.')) {
+      setToAmount('0');
+      return setBaseAmount('0');
+    }
+
+    if (isNaN(amount)) return;
+
+    if (rate.rate === 0) {
+      setToAmount('0');
+      return setBaseAmount(text);
+    }
+
+    setToAmount((amount * rate.rate).toFixed(2));
+    return setBaseAmount(text);
+  }
+
+  const handleChangeToAmount = (text:string) => {
+    text = text.replace(/[^0-9.]/g, '');
+    const amount = Number(text);
+
+    if (!text && !text.endsWith('.')) {
+      setBaseAmount('0');
+      return setToAmount('0');
+    }
+
+    if (isNaN(amount)) return;
+
+    if (rate.rate === 0) {
+      setBaseAmount('0');
+      return setToAmount(text);
+    }
+
+    setBaseAmount((amount / rate.rate).toFixed(2));
+    return setToAmount(text);
+  }
+
   const handleChangeCurrency = (field:string) => {
     setStore(storeKeyChangeField, field);
     return router.push({ pathname: '/choose-currency' });
   }
 
-  const handleSwapFieldsPress = () => {
+  const handleSwapFields = () => {
+    setToAmount(baseAmount);
+    setBaseAmount(toAmount);
     setRate(previous => ({
       base: previous.to,
       to: previous.base,
@@ -66,11 +109,12 @@ export default function Convert() {
               size={styles.icon} />
           </Pressable>
           <TextInput
-            onChangeText={text => setAmount(parseFloat(text))}
-            className='text-xl text-right outline-none'
-            value={amount.toString()}
-            keyboardType='numeric'
-            style={styles.font_mono} />
+            onChangeText={handleChangeBaseAmount}
+            value={baseAmount}
+            keyboardType='decimal-pad'
+            maxLength={12}
+            style={styles.font_mono}
+            className='text-xl text-right outline-none' />
         </View>
         <View className='p-8 flex flex-row justify-between border border-neutral-300 rounded-lg bg-white'>
           <Pressable 
@@ -86,14 +130,15 @@ export default function Convert() {
               size={styles.icon} />
           </Pressable>
           <TextInput
-            onChangeText={text => setAmount(parseFloat(text))}
-            className='text-xl text-right outline-none'
-            value={(amount * rate.rate).toString()}
-            keyboardType='numeric'
-            style={styles.font_mono} />
+            onChangeText={handleChangeToAmount}
+            value={toAmount}
+            keyboardType='decimal-pad'
+            maxLength={12}
+            style={styles.font_mono}
+            className='text-xl text-right outline-none' />
         </View>
         <Pressable 
-          onPress={handleSwapFieldsPress}
+          onPress={handleSwapFields}
           className='absolute right-8 top-0 bottom-0 m-auto size-8 flex items-center justify-center rounded-full bg-white border border-neutral-300'>
           <Ionicons 
             name='swap-vertical-outline'

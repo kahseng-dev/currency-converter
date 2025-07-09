@@ -3,6 +3,26 @@ const API_URL:string = `https://api.frankfurter.dev/${API_VERSION}`;
 
 import { Rate } from '@/types/rate';
 
+export const getRate = async (rate: Rate) => {
+    let url:URL = new URL(`${API_URL}/latest`);
+    let parameters:URLSearchParams = new URLSearchParams(url.search);
+
+    parameters.append('base', rate.base);
+    parameters.append('symbols', rate.to);
+
+    const response = await fetch(`${url.toString()}?${parameters.toString()}`);
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    if (!response.ok) throw console.error(`Failed to fetch data: ${response.status}`);
+
+    const data = await response.json();
+
+    rate.rate = data.rates[rate.to];
+
+    return rate;
+}
+
 const getUniqueSymbolsByBase = (rates: Rate[]) => {
     const uniqueSymbolsByBase = <{base: string, symbols: string[]}[]>([]);
     
