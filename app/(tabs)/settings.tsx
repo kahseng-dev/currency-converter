@@ -1,16 +1,37 @@
 import { Link } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import SegmentedControls from '@/components/segmented-controls';
 import { styles } from '@/constants/styles';
+import { getStore, setStore } from '@/services/async-stores';
 
 export default function Settings() {
-  const APP_VERSION: string = '0.1.0';
+  const [theme, setTheme] = useState<string>('');
 
-  const [theme, setTheme] = useState('auto');
+  const APP_VERSION:string = '0.1.0';
+  const storeKeyTheme:string = 'theme';
+
+  const fetchStoredTheme = async () => {
+    const storedTheme = await getStore(storeKeyTheme);
+
+    if (!storedTheme) {
+      return setTheme('auto');
+    }
+
+    return setTheme(storedTheme);
+  }
+
+  const handleThemeChange = (value:string) => {
+    setTheme(value);
+    setStore(storeKeyTheme, value);
+  }
+
+  useEffect(() => {
+    fetchStoredTheme();
+  }, []);
 
   return (
     <View className='p-8 flex gap-4'>
@@ -21,7 +42,7 @@ export default function Settings() {
       </Text>
       <SegmentedControls 
         options={['auto', 'dark', 'light']} 
-        setValue={setTheme} 
+        setValue={handleThemeChange} 
         value={theme} />
       <Text 
         style={styles.font_mono}
