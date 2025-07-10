@@ -5,11 +5,12 @@ import { Pressable, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
+import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { setStore } from '@/services/async-stores';
 
 export default function Details() {
-  const { base, to } = useLocalSearchParams<{base:string, to:string}>();
+  const { from, into } = useLocalSearchParams<{ from:string, into:string }>();
 
   const [detailsSpan, setDetailsSpan] = useState('');
   const [selectedTimeframeOption, setSelectedTimeframeOption] = useState(0);
@@ -79,10 +80,8 @@ export default function Details() {
   };
 
   const handleConvertCurrency = () => {
-    const storeKeyBase = 'convert-field-base';
-    const storeKeyTo = 'convert-field-to';
-    setStore(storeKeyBase, base);
-    setStore(storeKeyTo, to);
+    setStore(stores.convert_from, from);
+    setStore(stores.convert_into, into);
 
     return router.push({ pathname: '/convert' });
   }
@@ -94,12 +93,12 @@ export default function Details() {
           <Text 
             style={styles.font_mono}
             className='text-xl'>
-            {base} to {to}
+            {from} to {into}
           </Text>
           <Text 
             style={styles.font_mono}
             className={`text-sm ${styles.text_muted}`}>
-            {currencyName.of(base)} to {currencyName.of(to)}
+            {currencyName.of(from)} to {currencyName.of(into)}
           </Text>
         </View>
       </View>
@@ -107,7 +106,7 @@ export default function Details() {
         <Text 
           style={styles.font_mono}
           className='text-xl'>
-          1 {base} = 0 {to}
+          1 {from} = 0 {into}
         </Text>
         <Text style={styles.font_mono}>
           { detailsSpan ? 
@@ -119,7 +118,7 @@ export default function Details() {
               <Ionicons 
                 name='trending-up-outline'
                 size={styles.icon} />
-              Up by 0% ({0} {base})
+              Up by 0% ({0} {from})
             </Text>
           }
         </Text>
@@ -140,7 +139,7 @@ export default function Details() {
               strokeWidth={2}
               dot={false}
               activeDot={<CustomActiveDot />}
-              name={`1 ${base}`} />
+              name={`1 ${from}`} />
             <YAxis orientation='right' />
             <XAxis dataKey='date' tick={false} />
             <Tooltip 
@@ -149,7 +148,7 @@ export default function Details() {
                 month: 'long',
                 year: 'numeric',
               })}`}
-              formatter={ value => `${value} ${to}` }
+              formatter={ value => `${value} ${into}` }
               separator=' = ' />
           </LineChart>
         </ResponsiveContainer>
@@ -171,7 +170,7 @@ export default function Details() {
           <Text 
             style={styles.font_mono}
             className='text-sm text-center'>
-            Convert {base} to {to}
+            Convert {from} to {into}
           </Text>
         </Pressable>
       </View>

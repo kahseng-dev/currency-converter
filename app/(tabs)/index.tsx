@@ -5,36 +5,35 @@ import { Pressable, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from '@/constants/styles';
+import { getStore } from '@/services/async-stores';
 import { getRates } from '@/services/get-rates';
+import { Rate } from '@/types/rate';
 
 export default function Index() {
-
-  type Rate = { base: string; to: string; rate: number };
-
-  const [rates, setRates] = useState<{favourites: Rate[], popular: Rate[]}>(
+  const [data, setData] = useState<Rate[]>();
+  const [rates, setRates] = useState<{ favourites: Rate[], popular: Rate[] }>(
     {
       favourites: [
-        { base: 'USD', to: 'SGD', rate: 0 }, 
-        { base: 'USD', to: 'GBP', rate: 0 },
+        { from: 'USD', into: 'SGD', rate: 0 }, 
+        { from: 'USD', into: 'GBP', rate: 0 },
       ],
       popular: [
-        { base: 'GBP', to: 'USD', rate: 0 }, 
-        { base: 'EUR', to: 'USD', rate: 0 }, 
-        { base: 'USD', to: 'INR', rate: 0 },
+        { from: 'GBP', into: 'USD', rate: 0 }, 
+        { from: 'EUR', into: 'USD', rate: 0 }, 
+        { from: 'USD', into: 'INR', rate: 0 },
       ],
     }
   )
 
-  const [data, setData] = useState<any>();
+  const storeKeyRatesList:string = 'home-rates-list';
 
-  useEffect(() => {
-    if (!data) {
-      getRates([...rates.favourites, ...rates.popular]).then(setData);
-    }
-  }, []);
+  const fetchStoredCurrencies = async () => {
+    const storedRateList = await getStore(storeKeyRatesList)
+    if (storedRateList) return setRates(JSON.parse(storedRateList))
+  }
 
-  const handleViewDetails = (base: string, to: string) => {
-    return router.push({ pathname: '/details', params: { base, to } });
+  const handleViewDetails = (from: string, into: string) => {
+    return router.push({ pathname: '/details', params: { from, into } });
   }
 
   const loadFavourites = () => {
@@ -52,19 +51,19 @@ export default function Index() {
       <View>
         { rates.favourites.map((rate, index) => 
           <Pressable
-            onPress={() => handleViewDetails(rate.base, rate.to)}
+            onPress={() => handleViewDetails(rate.from, rate.into)}
             key={index}
-            className='p-4 flex flex-row gap-4 hover:bg-neutral-300'>
+            className='p-4 flex flex-row gap-4 duration-300 transition hover:bg-neutral-300'>
             <View>
-              <Text style={styles.font_mono}>{rate.base}</Text>
-              <Text style={styles.font_mono}>{rate.to}</Text>
+              <Text style={styles.font_mono}>{rate.from}</Text>
+              <Text style={styles.font_mono}>{rate.into}</Text>
             </View>
             <View>
-              <Text style={styles.font_mono}>{rate.base} to {rate.to}</Text>
+              <Text style={styles.font_mono}>{rate.from} to {rate.into}</Text>
               <Text 
                 className='text-neutral-500'
                 style={styles.font_mono}>
-                1 {rate.base} = {rate.rate} {rate.to}
+                1 {rate.from} = {rate.rate.toFixed(4)} {rate.into}
               </Text>
             </View>
           </Pressable>
@@ -78,19 +77,19 @@ export default function Index() {
       <View>
         { rates.popular.map((rate, index) => 
           <Pressable
-            onPress={() => handleViewDetails(rate.base, rate.to)}
+            onPress={() => handleViewDetails(rate.from, rate.into)}
             key={index}
-            className='p-4 flex flex-row gap-4 hover:bg-neutral-300'>
+            className='p-4 flex flex-row gap-4 duration-300 transition hover:bg-neutral-300'>
             <View>
-              <Text style={styles.font_mono}>{rate.base}</Text>
-              <Text style={styles.font_mono}>{rate.to}</Text>
+              <Text style={styles.font_mono}>{rate.from}</Text>
+              <Text style={styles.font_mono}>{rate.into}</Text>
             </View>
             <View>
-              <Text style={styles.font_mono}>{rate.base} to {rate.to}</Text>
+              <Text style={styles.font_mono}>{rate.from} to {rate.into}</Text>
               <Text 
                 className='text-neutral-500'
                 style={styles.font_mono}>
-                1 {rate.base} = {rate.rate} {rate.to}
+                1 {rate.from} = {rate.rate.toFixed(4)} {rate.into}
               </Text>
             </View>
           </Pressable>
@@ -98,6 +97,15 @@ export default function Index() {
       </View>
     )
   }
+
+  useEffect(() => {
+    fetchStoredCurrencies();
+    
+    if (!data) {
+      getRates([...rates.favourites, ...rates.popular])
+        .then(setData);
+    }
+  }, []);
 
   return (
     <View className='p-8 flex gap-4 bg-white h-screen'>

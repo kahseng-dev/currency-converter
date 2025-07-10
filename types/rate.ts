@@ -1,6 +1,6 @@
 export type Rate = {
-    base: string
-    to: string
+    from: string
+    into: string
     rate: number
     [key: string]: string | number;
 }

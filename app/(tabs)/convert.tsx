@@ -4,29 +4,29 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { styles } from '@/constants/styles';
 import { stores } from '@/constants/key-stores';
+import { styles } from '@/constants/styles';
 import { getStore } from '@/services/async-stores';
 import { getRate } from '@/services/get-rates';
 import { Rate } from '@/types/rate';
 
 export default function Convert() {
-  const [rate, setRate] = useState<Rate>({ base: 'USD', to: 'SGD', rate: 0 });
-  const [baseAmount, setBaseAmount] = useState<string>('0.00');
-  const [toAmount, setToAmount] = useState<string>((Number(baseAmount) * rate.rate).toFixed(2));
+  const [rate, setRate] = useState<Rate>({ from: 'USD', into: 'SGD', rate: 0 });
+  const [fromAmount, setFromAmount] = useState<string>('0.00');
+  const [intoAmount, setIntoAmount] = useState<string>((Number(fromAmount) * rate.rate).toFixed(2));
 
   const fetchStoredCurrencies = async () => {
-    const storedBase = await getStore(stores.convert_from);
-    const storedTo = await getStore(stores.convert_into);
+    const storedFrom = await getStore(stores.convert_from);
+    const storedInto = await getStore(stores.convert_into);
 
-    if (storedBase && storedTo) { 
+    if (storedFrom && storedInto) { 
       setRate(previous => ({
         ...previous,
-        base: storedBase,
-        to: storedTo,
+        from: storedFrom,
+        into: storedInto,
       }));
 
-      getRate({ base: storedBase, to: storedTo, rate: 0 })
+      getRate({ from: storedFrom, into: storedInto, rate: 0 })
         .then((fetchedRate) => {
           setRate(previous => ({
             ...previous,
@@ -49,33 +49,33 @@ export default function Convert() {
     const amount = Number(text);
 
     if (!text) {
-      setToAmount('0.00');
-      setBaseAmount('0.00');
+      setIntoAmount('0.00');
+      setFromAmount('0.00');
       return;
     }
 
     if (isNaN(amount)) return;
 
     if (rate.rate === 0) {
-      if (field != 'base') {
-        setBaseAmount(text);
-        return setToAmount('0.00');
+      if (field != 'from') {
+        setIntoAmount('0.00'); 
+        return setFromAmount(text);
       }
 
-      setBaseAmount('0.00');
-      return setToAmount(text);
+      setFromAmount('0.00');
+      return setIntoAmount(text);
     }
 
-    const isDeletion = field ? text.length < baseAmount.length : text.length < toAmount.length;
+    const isDeletion = field ? text.length < fromAmount.length : text.length < intoAmount.length;
     text = autoFillTrailingZero(amount, isDeletion);
 
-    if (field === 'base') {
-      setToAmount((amount * rate.rate).toFixed(2));
-      return setBaseAmount(text);
+    if (field === 'from') {
+      setIntoAmount((amount * rate.rate).toFixed(2));
+      return setFromAmount(text);
     }
 
-    setBaseAmount((amount / rate.rate).toFixed(2));
-    return setToAmount(text);
+    setFromAmount((amount / rate.rate).toFixed(2));
+    return setIntoAmount(text);
   }
 
   const handleChangeCurrency = (field:string) => {
@@ -83,11 +83,11 @@ export default function Convert() {
   }
 
   const handleSwapFields = () => {
-    setToAmount(baseAmount);
-    setBaseAmount(toAmount);
+    setIntoAmount(fromAmount);
+    setFromAmount(intoAmount);
     setRate(previous => ({
-      base: previous.to,
-      to: previous.base,
+      from: previous.into,
+      into: previous.from,
       rate: previous.rate
     }));
   }
@@ -101,20 +101,20 @@ export default function Convert() {
       <View className='flex gap-4'>
         <View className='p-8 group flex flex-row justify-between border border-neutral-300 rounded-lg bg-white'>
           <Pressable
-            onPress={() => handleChangeCurrency('base')}
+            onPress={() => handleChangeCurrency('from')}
             className='flex flex-row items-center gap-2'>
             <Text
               className='text-xl'
               style={styles.font_mono}>
-              {rate.base}
+              {rate.from}
             </Text>
             <Ionicons
               name='chevron-down'
               size={styles.icon} />
           </Pressable>
           <TextInput
-            onChangeText={(text) => handleChangeAmount(text, 'base')}
-            value={baseAmount}
+            onChangeText={(text) => handleChangeAmount(text, 'from')}
+            value={fromAmount}
             keyboardType='decimal-pad'
             maxLength={12}
             style={styles.font_mono}
@@ -122,20 +122,20 @@ export default function Convert() {
         </View>
         <View className='p-8 flex flex-row justify-between border border-neutral-300 rounded-lg bg-white'>
           <Pressable 
-            onPress={() => handleChangeCurrency('to')}
+            onPress={() => handleChangeCurrency('into')}
             className='flex flex-row items-center gap-2'>
             <Text
               className='text-xl'
               style={styles.font_mono}>
-              {rate.to}
+              {rate.into}
             </Text>
             <Ionicons
               name='chevron-down'
               size={styles.icon} />
           </Pressable>
           <TextInput
-            onChangeText={(text) => handleChangeAmount(text, 'to')}
-            value={toAmount}
+            onChangeText={(text) => handleChangeAmount(text, 'into')}
+            value={intoAmount}
             keyboardType='decimal-pad'
             maxLength={12}
             style={styles.font_mono}
@@ -152,7 +152,7 @@ export default function Convert() {
       <Text 
         className='py-2 text-center bg-neutral-300 rounded'
         style={styles.font_mono}>
-        1 {rate.base} = {rate.rate} {rate.to} 
+        1 {rate.from} = {rate.rate} {rate.into} 
         <Text className='text-neutral-500'> at the mid-market rate</Text>
       </Text>
     </View>

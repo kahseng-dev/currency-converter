@@ -21,12 +21,12 @@ export default function SearchCurrency() {
     switch (pathname) {
       case '/add-favourites':
         if (field === 'from') setStore(stores.add_favourites_from, currencyCode);
-        if (field === 'to') setStore(stores.add_favourites_into, currencyCode);
+        if (field === 'into') setStore(stores.add_favourites_into, currencyCode);
         return router.push({ pathname: pathname });
 
       case '/convert':
-        if (field === 'base') setStore(stores.convert_from, currencyCode);
-        if (field === 'to') setStore(stores.convert_into, currencyCode);
+        if (field === 'from') setStore(stores.convert_from, currencyCode);
+        if (field === 'into') setStore(stores.convert_into, currencyCode);
         return router.push({ pathname: pathname });
 
       default:

@@ -7,8 +7,8 @@ export const getRate = async (rate: Rate) => {
     let url:URL = new URL(`${API_URL}/latest`);
     let parameters:URLSearchParams = new URLSearchParams(url.search);
 
-    parameters.append('base', rate.base);
-    parameters.append('symbols', rate.to);
+    parameters.append('base', rate.from);
+    parameters.append('symbols', rate.into);
 
     const response = await fetch(`${url.toString()}?${parameters.toString()}`);
 
@@ -18,7 +18,7 @@ export const getRate = async (rate: Rate) => {
 
     const data = await response.json();
 
-    rate.rate = data.rates[rate.to];
+    rate.rate = data.rates[rate.into];
 
     return rate;
 }
@@ -27,13 +27,13 @@ const getUniqueSymbolsByBase = (rates: Rate[]) => {
     const uniqueSymbolsByBase = <{base: string, symbols: string[]}[]>([]);
     
     rates.map(rate => {
-        const base = uniqueSymbolsByBase.find(item => item.base === rate.base)
+        const base = uniqueSymbolsByBase.find(item => item.base === rate.from)
         
-        if (!base) return uniqueSymbolsByBase.push({base: rate.base, symbols: [rate.to]})
+        if (!base) return uniqueSymbolsByBase.push({ base: rate.from, symbols: [rate.into] })
 
-        if (base.symbols.includes(rate.to)) return
+        if (base.symbols.includes(rate.into)) return
 
-        return base.symbols.push(rate.to)
+        return base.symbols.push(rate.into)
     })
     
     return uniqueSymbolsByBase
@@ -62,12 +62,12 @@ export const getRates = async (rates: Rate[]) => {
     if (dataList) {
         dataList.map(data => {
             rates.map(rate => {
-                if (data.base === rate.base) {
-                    rate.rate = data.rates[rate.to]
+                if (data.base === rate.from) {
+                    rate.rate = data.rates[rate.into]
                 }
             })
         })
-
+        
         return rates
     }
 }

@@ -11,7 +11,7 @@ import { getStore, removeStore, setStore } from '@/services/async-stores';
 
 export default function AddFavourites() {
   const [ from, setFrom ] = useState('');
-  const [ to, setTo ] = useState('');
+  const [ into, setInto ] = useState('');
 
   const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
   const currenciesList = {
@@ -61,8 +61,8 @@ export default function AddFavourites() {
 
   const handleSwapFields = () => {
     let temp = from
-    setFrom(to)
-    setTo(temp)
+    setFrom(into)
+    setInto(temp)
     return
   }
 
@@ -72,9 +72,9 @@ export default function AddFavourites() {
       return setFrom(currency);
     }
 
-    if (!to) {
+    if (!into) {
       setStore(stores.add_favourites_into, currency);
-      return setTo(currency);
+      return setInto(currency);
     }
   }
 
@@ -92,9 +92,9 @@ export default function AddFavourites() {
       return setFrom('');
     }
 
-    if (field === 'to') {
+    if (field === 'into') {
       await removeStore(stores.add_favourites_into);
-      return setTo('');
+      return setInto('');
     }
   }
 
@@ -104,10 +104,10 @@ export default function AddFavourites() {
 
   const fetchStoredCurrencies = async () => {
     const storedFrom = await getStore(stores.add_favourites_from);
-    const storedTo = await getStore(stores.add_favourites_into);
+    const storedInto = await getStore(stores.add_favourites_into);
 
     if (storedFrom) setFrom(storedFrom)
-    if (storedTo) setTo(storedTo)
+    if (storedInto) setInto(storedInto)
   };
 
   useEffect(() => {
@@ -145,19 +145,19 @@ export default function AddFavourites() {
           }
         </Pressable>
         <Pressable 
-          onPress={() => handleFieldClick('to')}
+          onPress={() => handleFieldClick('into')}
           className='p-4 border border-neutral-300 bg-white rounded'>
-          { to ? 
+          { into ? 
             <View className='flex-row justify-between items-center'>
               <Text 
                 className='flex gap-2 text-sm'
                 style={styles.font_mono}>
-                {to}
+                {into}
                 <Text className='text-neutral-500'>
-                  {currencyName.of(to)}
+                  {currencyName.of(into)}
                 </Text>
               </Text>
-              <Pressable onPress={() => handleClearField('to')}>
+              <Pressable onPress={() => handleClearField('into')}>
                 <Ionicons 
                   name='close-outline'
                   size={styles.icon} />
@@ -179,7 +179,7 @@ export default function AddFavourites() {
             size={styles.icon} />
         </Pressable>
       </View>
-      { !from || !to ?
+      { !from || !into ?
         <View className='flex gap-2'>
           <Text 
             style={styles.font_mono}
@@ -199,7 +199,7 @@ export default function AddFavourites() {
           <Text 
             style={styles.font_mono}
             className='p-4 text-center bg-white text-sm rounded border border-neutral-300 bg-transparent hover:bg-neutral-300 transition duration-300'>
-            Add {from} to {to}
+            Add {from} to {into}
           </Text>
         </Pressable>
       }
