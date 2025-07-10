@@ -26,9 +26,15 @@ export default function Index() {
     }
   )
 
-  const fetchStoredRates = async () => {
-    const storedRates = await getStore(stores.home_rates)
-    if (storedRates) return setRates(JSON.parse(storedRates))
+  const fetchStoredFavourites = async () => {
+    const storedFavourites = await getStore(stores.home_favourites)
+
+    if (storedFavourites) { 
+      setRates(previous => ({
+        ...previous,
+        favourites: JSON.parse(storedFavourites)
+      }))
+    }
   }
 
   const handleViewDetails = (from: string, into: string) => {
@@ -94,7 +100,7 @@ export default function Index() {
   }
 
   useEffect(() => {
-    fetchStoredRates();
+    fetchStoredFavourites();
     
     if (!data) {
       getRates([...rates.favourites, ...rates.popular]).then(setData);

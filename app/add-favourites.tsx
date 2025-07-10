@@ -8,10 +8,15 @@ import { currencies } from '@/constants/currencies';
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { getStore, removeStore, setStore } from '@/services/async-stores';
+import { Rate } from '@/types/rate';
 
 export default function AddFavourites() {
-  const [ from, setFrom ] = useState('');
-  const [ into, setInto ] = useState('');
+  const [ from, setFrom ] = useState<string>('');
+  const [ into, setInto ] = useState<string>('');
+  const [ favourites, setFavourites ] = useState<Rate[]>([
+    { from: 'USD', into: 'SGD', rate: 0 }, 
+    { from: 'USD', into: 'GBP', rate: 0 }, 
+  ]);
 
   const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
   const currenciesList = {
@@ -55,7 +60,7 @@ export default function AddFavourites() {
               {currencyName.of(currency.item)}
             </Text>
           </Pressable>
-        }/>
+        } />
     )
   }
 
@@ -99,15 +104,26 @@ export default function AddFavourites() {
   }
 
   const handleAddRate = () => {
-    return 
+    let rate = { from: from, into: into, rate: 0 };
+
+    if (favourites.some(favourite => favourite.from === rate.from && favourite.into === rate.into)) {
+      return 
+    }
+
+    favourites.push(rate);
+    setFavourites(favourites);
+    setStore(stores.home_favourites, JSON.stringify(favourites));
+    return router.push({ pathname: './' });
   }
 
   const fetchStoredCurrencies = async () => {
     const storedFrom = await getStore(stores.add_favourites_from);
     const storedInto = await getStore(stores.add_favourites_into);
+    const storedFavourites = await getStore(stores.home_favourites);
 
     if (storedFrom) setFrom(storedFrom)
     if (storedInto) setInto(storedInto)
+    if (storedFavourites) setFavourites(JSON.parse(storedFavourites))
   };
 
   useEffect(() => {
