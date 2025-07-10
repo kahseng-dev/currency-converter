@@ -50,14 +50,14 @@ export default function Details() {
   const handleActiveDotMouseDown = (data: { date:string, rate:number }) => {
     let date = new Date(data.date);
 
-    switch (selectedTimeframeOption) {
-      case 0: // Week
+    switch (timeframeOptions[selectedTimeframeOption]) {
+      case 'W':
         return setDetailsSpan(date.toLocaleDateString('en-GB', {
           weekday: "long",
         }));
-      case 1: // 1 Month
-      case 2: // 6 Months
-      case 3: // 1 Year
+      case 'M':
+      case '6M':
+      case '1Y':
         return setDetailsSpan(date.toLocaleDateString('en-GB', {
           day: '2-digit',
           month: 'long',
