@@ -1,5 +1,6 @@
 export const stores = {
     app_theme: 'app_theme',
+    home_rates: 'home-rates',
     add_favourites_from: 'add-favourites-from',
     add_favourites_into: 'add-favourites-into',
     convert_from: 'convert-from',

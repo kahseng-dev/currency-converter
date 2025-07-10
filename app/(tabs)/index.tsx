@@ -4,6 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { getStore } from '@/services/async-stores';
 import { getRates } from '@/services/get-rates';
@@ -25,11 +26,9 @@ export default function Index() {
     }
   )
 
-  const storeKeyRatesList:string = 'home-rates-list';
-
-  const fetchStoredCurrencies = async () => {
-    const storedRateList = await getStore(storeKeyRatesList)
-    if (storedRateList) return setRates(JSON.parse(storedRateList))
+  const fetchStoredRates = async () => {
+    const storedRates = await getStore(stores.home_rates)
+    if (storedRates) return setRates(JSON.parse(storedRates))
   }
 
   const handleViewDetails = (from: string, into: string) => {
@@ -95,7 +94,7 @@ export default function Index() {
   }
 
   useEffect(() => {
-    fetchStoredCurrencies();
+    fetchStoredRates();
     
     if (!data) {
       getRates([...rates.favourites, ...rates.popular]).then(setData);
