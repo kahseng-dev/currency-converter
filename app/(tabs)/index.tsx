@@ -37,73 +37,68 @@ export default function Index() {
   }
 
   const loadFavourites = () => {
-    if (rates.favourites.length === 0) {
-      return (
+    return <View>
+      { rates.favourites.length === 0 ? 
         <View>
           <Text style={styles.font_mono}>
             ⭐ You haven’t added any favourite rates yet.
           </Text>
         </View>
-      )
-    }
-
-    return (
-      <View>
-        { rates.favourites.map((rate, index) => 
-          <Pressable
-            onPress={() => handleViewDetails(rate.from, rate.into)}
-            key={index}
-            className='p-4 flex flex-row gap-4 duration-300 transition hover:bg-neutral-300'>
-            <View>
-              <Text style={styles.font_mono}>{rate.from}</Text>
-              <Text style={styles.font_mono}>{rate.into}</Text>
-            </View>
-            <View>
-              <Text style={styles.font_mono}>{rate.from} to {rate.into}</Text>
-              <Text 
-                className='text-neutral-500'
-                style={styles.font_mono}>
-                1 {rate.from} = {rate.rate.toFixed(4)} {rate.into}
-              </Text>
-            </View>
-          </Pressable>
-        )}
-      </View>
-    )
+        :
+        <View>
+          { rates.favourites.map((rate, index) => 
+            <Pressable
+              onPress={() => handleViewDetails(rate.from, rate.into)}
+              key={index}
+              className='p-4 flex flex-row gap-4 duration-300 transition hover:bg-neutral-300'>
+              <View>
+                <Text style={styles.font_mono}>{rate.from}</Text>
+                <Text style={styles.font_mono}>{rate.into}</Text>
+              </View>
+              <View>
+                <Text style={styles.font_mono}>{rate.from} to {rate.into}</Text>
+                <Text 
+                  className='text-neutral-500'
+                  style={styles.font_mono}>
+                  1 {rate.from} = {rate.rate.toFixed(4)} {rate.into}
+                </Text>
+              </View>
+            </Pressable>
+          )}
+        </View>
+      }
+    </View>
   }
 
   const loadPopular = () => {
-    return (
-      <View>
-        { rates.popular.map((rate, index) => 
-          <Pressable
-            onPress={() => handleViewDetails(rate.from, rate.into)}
-            key={index}
-            className='p-4 flex flex-row gap-4 duration-300 transition hover:bg-neutral-300'>
-            <View>
-              <Text style={styles.font_mono}>{rate.from}</Text>
-              <Text style={styles.font_mono}>{rate.into}</Text>
-            </View>
-            <View>
-              <Text style={styles.font_mono}>{rate.from} to {rate.into}</Text>
-              <Text 
-                className='text-neutral-500'
-                style={styles.font_mono}>
-                1 {rate.from} = {rate.rate.toFixed(4)} {rate.into}
-              </Text>
-            </View>
-          </Pressable>
-        )}
-      </View>
-    )
+    return <View>
+      { rates.popular.map((rate, index) => 
+        <Pressable
+          onPress={() => handleViewDetails(rate.from, rate.into)}
+          key={index}
+          className='p-4 flex flex-row gap-4 duration-300 transition hover:bg-neutral-300'>
+          <View>
+            <Text style={styles.font_mono}>{rate.from}</Text>
+            <Text style={styles.font_mono}>{rate.into}</Text>
+          </View>
+          <View>
+            <Text style={styles.font_mono}>{rate.from} to {rate.into}</Text>
+            <Text 
+              className='text-neutral-500'
+              style={styles.font_mono}>
+              1 {rate.from} = {rate.rate.toFixed(4)} {rate.into}
+            </Text>
+          </View>
+        </Pressable>
+      )}
+    </View>
   }
 
   useEffect(() => {
     fetchStoredCurrencies();
     
     if (!data) {
-      getRates([...rates.favourites, ...rates.popular])
-        .then(setData);
+      getRates([...rates.favourites, ...rates.popular]).then(setData);
     }
   }, []);
 
