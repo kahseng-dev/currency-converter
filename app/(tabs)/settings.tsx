@@ -13,6 +13,8 @@ export default function Settings() {
   const [ theme, setTheme ] = useState<string>('');
 
   const APP_VERSION:string = '0.1.0';
+  const REPO_LINK = 'https://github.com/kahseng-dev/currency-converter';
+  const WEBSITE_LINK = 'https://kahseng.is-a.dev/';
 
   const fetchStoredTheme = async () => {
     const storedTheme = await getStore(stores.app_theme);
@@ -51,7 +53,7 @@ export default function Settings() {
       </Text>
       <View className='flex gap-2'>
         <Link 
-          href='https://github.com/kahseng-dev/currency-converter'
+          href={REPO_LINK}
           target='_blank'
           className='p-1.5 flex justify-between items-center rounded-full hover:bg-neutral-200 transition duration-300' >
           <View className='gap-2 flex-row items-center'>
@@ -67,7 +69,7 @@ export default function Settings() {
             size={styles.icon} />
         </Link>
         <Link 
-          href='https://kahseng.is-a.dev/'
+          href={WEBSITE_LINK}
           target='_blank'
           className='p-1.5 flex justify-between items-center rounded-full hover:bg-neutral-200 transition duration-300'>
           <View className='gap-2 flex-row items-center'>
