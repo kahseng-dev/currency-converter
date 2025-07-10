@@ -11,8 +11,8 @@ import { Rate } from '@/types/rate';
 
 export default function Convert() {
   const [rate, setRate] = useState<Rate>({ base: 'USD', to: 'SGD', rate: 0 });
-  const [baseAmount, setBaseAmount] = useState<string>('1000');
-  const [toAmount, setToAmount] = useState<string>((Number(baseAmount) * rate.rate).toString());
+  const [baseAmount, setBaseAmount] = useState<string>('0.00');
+  const [toAmount, setToAmount] = useState<string>((Number(baseAmount) * rate.rate).toFixed(2));
   
   const storeKeyChangeField:string = 'convert-change-field';
   const storeKeyBase:string = 'convert-field-base';
@@ -29,40 +29,42 @@ export default function Convert() {
     }));
   };
 
-  const handleChangeBaseAmount = (text:string) => {
-    text = text.replace(/[^0-9.]/g, '');
-    const amount = Number(text);
-
-    if (!text && !text.endsWith('.')) {
-      setToAmount('0');
-      return setBaseAmount('0');
+  const autoFillTrailingZero = (amount:number, isDeletion:boolean) => {
+    if (!isDeletion) {
+      return (amount * 10).toFixed(2);
     }
-
-    if (isNaN(amount)) return;
-
-    if (rate.rate === 0) {
-      setToAmount('0');
-      return setBaseAmount(text);
-    }
-
-    setToAmount((amount * rate.rate).toFixed(2));
-    return setBaseAmount(text);
+    
+    return (amount / 10).toFixed(2);
   }
 
-  const handleChangeToAmount = (text:string) => {
+  const handleChangeAmount = (text:string, field:string) => {
     text = text.replace(/[^0-9.]/g, '');
     const amount = Number(text);
 
-    if (!text && !text.endsWith('.')) {
-      setBaseAmount('0');
-      return setToAmount('0');
+    if (!text) {
+      setToAmount('0.00');
+      setBaseAmount('0.00');
+      return;
     }
 
     if (isNaN(amount)) return;
 
     if (rate.rate === 0) {
-      setBaseAmount('0');
+      if (field != 'base') {
+        setBaseAmount(text);
+        return setToAmount('0.00');
+      }
+
+      setBaseAmount('0.00');
       return setToAmount(text);
+    }
+
+    const isDeletion = field ? text.length < baseAmount.length : text.length < toAmount.length;
+    text = autoFillTrailingZero(amount, isDeletion);
+
+    if (field === 'base') {
+      setToAmount((amount * rate.rate).toFixed(2));
+      return setBaseAmount(text);
     }
 
     setBaseAmount((amount / rate.rate).toFixed(2));
@@ -109,7 +111,7 @@ export default function Convert() {
               size={styles.icon} />
           </Pressable>
           <TextInput
-            onChangeText={handleChangeBaseAmount}
+            onChangeText={(text) => handleChangeAmount(text, 'base')}
             value={baseAmount}
             keyboardType='decimal-pad'
             maxLength={12}
@@ -130,7 +132,7 @@ export default function Convert() {
               size={styles.icon} />
           </Pressable>
           <TextInput
-            onChangeText={handleChangeToAmount}
+            onChangeText={(text) => handleChangeAmount(text, 'to')}
             value={toAmount}
             keyboardType='decimal-pad'
             maxLength={12}
