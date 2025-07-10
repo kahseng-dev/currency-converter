@@ -5,6 +5,7 @@ import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { currencies } from '@/constants/currencies';
+import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { getStore, removeStore, setStore } from '@/services/async-stores';
 
@@ -17,9 +18,6 @@ export default function AddFavourites() {
     suggested: ['USD','GBP', 'SGD', 'EUR', 'INR'],
     all: Object.keys(currencies),
   };
-
-  const storeKeyFrom:string = 'add-favourites-from';
-  const storeKeyTo:string = 'add-favourites-to';
 
   const loadSuggestedCurrencies = () => {
     return (
@@ -70,12 +68,12 @@ export default function AddFavourites() {
 
   const handleCurrencyClick = (currency: string) => {
     if (!from) {
-      setStore(storeKeyFrom, currency);
+      setStore(stores.add_favourites_from, currency);
       return setFrom(currency);
     }
 
     if (!to) {
-      setStore(storeKeyTo, currency);
+      setStore(stores.add_favourites_into, currency);
       return setTo(currency);
     }
   }
@@ -90,12 +88,12 @@ export default function AddFavourites() {
 
   const handleClearField = async (field:string) => {
     if (field === 'from') {
-      await removeStore(storeKeyFrom);
+      await removeStore(stores.add_favourites_from);
       return setFrom('');
     }
 
     if (field === 'to') {
-      await removeStore(storeKeyTo);
+      await removeStore(stores.add_favourites_into);
       return setTo('');
     }
   }
@@ -105,8 +103,8 @@ export default function AddFavourites() {
   }
 
   const fetchStoredCurrencies = async () => {
-    const storedFrom = await getStore(storeKeyFrom);
-    const storedTo = await getStore(storeKeyTo);
+    const storedFrom = await getStore(stores.add_favourites_from);
+    const storedTo = await getStore(stores.add_favourites_into);
 
     if (storedFrom) setFrom(storedFrom)
     if (storedTo) setTo(storedTo)

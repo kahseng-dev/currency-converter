@@ -5,6 +5,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from '@/constants/styles';
+import { stores } from '@/constants/key-stores';
 import { getStore } from '@/services/async-stores';
 import { getRate } from '@/services/get-rates';
 import { Rate } from '@/types/rate';
@@ -13,13 +14,10 @@ export default function Convert() {
   const [rate, setRate] = useState<Rate>({ base: 'USD', to: 'SGD', rate: 0 });
   const [baseAmount, setBaseAmount] = useState<string>('0.00');
   const [toAmount, setToAmount] = useState<string>((Number(baseAmount) * rate.rate).toFixed(2));
-  
-  const storeKeyBase:string = 'convert-field-base';
-  const storeKeyTo:string = 'convert-field-to';
 
   const fetchStoredCurrencies = async () => {
-    const storedBase = await getStore(storeKeyBase);
-    const storedTo = await getStore(storeKeyTo);
+    const storedBase = await getStore(stores.convert_from);
+    const storedTo = await getStore(stores.convert_into);
 
     if (storedBase && storedTo) { 
       setRate(previous => ({

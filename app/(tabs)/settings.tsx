@@ -5,17 +5,17 @@ import { Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import SegmentedControls from '@/components/segmented-controls';
+import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { getStore, setStore } from '@/services/async-stores';
 
 export default function Settings() {
-  const [theme, setTheme] = useState<string>('');
+  const [ theme, setTheme ] = useState<string>('');
 
   const APP_VERSION:string = '0.1.0';
-  const storeKeyTheme:string = 'theme';
 
   const fetchStoredTheme = async () => {
-    const storedTheme = await getStore(storeKeyTheme);
+    const storedTheme = await getStore(stores.app_theme);
 
     if (!storedTheme) {
       return setTheme('auto');
@@ -26,7 +26,7 @@ export default function Settings() {
 
   const handleThemeChange = (value:string) => {
     setTheme(value);
-    setStore(storeKeyTheme, value);
+    setStore(stores.app_theme, value);
   }
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import { FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-na
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { currencies } from '@/constants/currencies';
+import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { setStore } from '@/services/async-stores';
 
@@ -16,21 +17,16 @@ export default function SearchCurrency() {
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Record<string, string>>(currencies);
 
-  const storeKeyAddFrom:string = 'add-favourites-from';
-  const storeKeyAddTo:string = 'add-favourites-to';
-  const storeKeyBase:string = 'convert-field-base';
-  const storeKeyTo:string = 'convert-field-to';
-  
   const handleCurrencyClick = async (currencyCode:string) => {
     switch (pathname) {
       case '/add-favourites':
-        if (field === 'from') setStore(storeKeyAddFrom, currencyCode);
-        if (field === 'to') setStore(storeKeyAddTo, currencyCode);
+        if (field === 'from') setStore(stores.add_favourites_from, currencyCode);
+        if (field === 'to') setStore(stores.add_favourites_into, currencyCode);
         return router.push({ pathname: pathname });
 
       case '/convert':
-        if (field === 'base') setStore(storeKeyBase, currencyCode);
-        if (field === 'to') setStore(storeKeyTo, currencyCode);
+        if (field === 'base') setStore(stores.convert_from, currencyCode);
+        if (field === 'to') setStore(stores.convert_into, currencyCode);
         return router.push({ pathname: pathname });
 
       default:
