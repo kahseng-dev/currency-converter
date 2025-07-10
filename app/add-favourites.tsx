@@ -1,15 +1,14 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { currencies } from '@/constants/currencies';
 import { styles } from '@/constants/styles';
+import { getStore, removeStore, setStore } from '@/services/async-stores';
 
 export default function AddFavourites() {
-  const { field, currencyCode } = useLocalSearchParams<{ field?:string, currencyCode?:string }>();
-
   const [ from, setFrom ] = useState('');
   const [ to, setTo ] = useState('');
 
@@ -18,6 +17,9 @@ export default function AddFavourites() {
     suggested: ['USD','GBP', 'SGD', 'EUR', 'INR'],
     all: Object.keys(currencies),
   };
+
+  const storeKeyFrom:string = 'add-favourites-from';
+  const storeKeyTo:string = 'add-favourites-to';
 
   const loadSuggestedCurrencies = () => {
     return (
@@ -59,7 +61,7 @@ export default function AddFavourites() {
     )
   }
 
-  const handleSwapFieldsPress = () => {
+  const handleSwapFields = () => {
     let temp = from
     setFrom(to)
     setTo(temp)
@@ -68,37 +70,51 @@ export default function AddFavourites() {
 
   const handleCurrencyClick = (currency: string) => {
     if (!from) {
+      setStore(storeKeyFrom, currency);
       return setFrom(currency);
     }
 
     if (!to) {
+      setStore(storeKeyTo, currency);
       return setTo(currency);
     }
   }
 
   const handleFieldClick = (field:string) => {
-    router.push({ pathname: '/search-currency', params: { field } });
+    router.push({ pathname: '/search-currency', params: { pathname: '/add-favourites', field: field } });
   }
 
   const loadSearchResults = () => {
     return 
   }
 
-  const handleClearField = (field:string) => {
+  const handleClearField = async (field:string) => {
     if (field === 'from') {
+      await removeStore(storeKeyFrom);
       return setFrom('');
     }
 
     if (field === 'to') {
+      await removeStore(storeKeyTo);
       return setTo('');
     }
-
-    return 
   }
 
   const handleAddRate = () => {
     return 
   }
+
+  const fetchStoredCurrencies = async () => {
+    const storedFrom = await getStore(storeKeyFrom);
+    const storedTo = await getStore(storeKeyTo);
+
+    if (storedFrom) setFrom(storedFrom)
+    if (storedTo) setTo(storedTo)
+  };
+
+  useEffect(() => {
+    fetchStoredCurrencies();
+  }, []);
 
   return (
     <ScrollView className='p-4'>
@@ -158,7 +174,7 @@ export default function AddFavourites() {
           }
         </Pressable>
         <Pressable 
-          onPress={handleSwapFieldsPress}
+          onPress={handleSwapFields}
           className='absolute right-4 top-0 bottom-0 m-auto size-8 flex items-center justify-center rounded-full bg-white border border-neutral-300'>
           <Ionicons 
             name='swap-vertical-outline'

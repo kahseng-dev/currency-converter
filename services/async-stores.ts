@@ -20,3 +20,13 @@ export const getStore = async (key:string) => {
     console.error(e)
   }
 }
+
+export const removeStore = async (key:string) => {
+  try {
+    return await AsyncStorage.removeItem(key);
+  }
+
+  catch (e) {
+    console.error(e)
+  }
+}

@@ -5,7 +5,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { styles } from '@/constants/styles';
-import { getStore, setStore } from '@/services/async-stores';
+import { getStore } from '@/services/async-stores';
 import { getRate } from '@/services/get-rates';
 import { Rate } from '@/types/rate';
 
@@ -14,7 +14,6 @@ export default function Convert() {
   const [baseAmount, setBaseAmount] = useState<string>('0.00');
   const [toAmount, setToAmount] = useState<string>((Number(baseAmount) * rate.rate).toFixed(2));
   
-  const storeKeyChangeField:string = 'convert-change-field';
   const storeKeyBase:string = 'convert-field-base';
   const storeKeyTo:string = 'convert-field-to';
 
@@ -22,11 +21,21 @@ export default function Convert() {
     const storedBase = await getStore(storeKeyBase);
     const storedTo = await getStore(storeKeyTo);
 
-    setRate(previous => ({
-      ...previous,
-      base: storedBase || previous.base,
-      to: storedTo || previous.to
-    }));
+    if (storedBase && storedTo) { 
+      setRate(previous => ({
+        ...previous,
+        base: storedBase,
+        to: storedTo,
+      }));
+
+      getRate({ base: storedBase, to: storedTo, rate: 0 })
+        .then((fetchedRate) => {
+          setRate(previous => ({
+            ...previous,
+            rate: fetchedRate.rate
+          }));
+      });
+    }
   };
 
   const autoFillTrailingZero = (amount:number, isDeletion:boolean) => {
@@ -72,8 +81,7 @@ export default function Convert() {
   }
 
   const handleChangeCurrency = (field:string) => {
-    setStore(storeKeyChangeField, field);
-    return router.push({ pathname: '/choose-currency' });
+    return router.push({ pathname: '/search-currency', params: { pathname: '/convert', field: field } });
   }
 
   const handleSwapFields = () => {
@@ -88,10 +96,6 @@ export default function Convert() {
 
   useEffect(() => {
     fetchStoredCurrencies();
-
-    if (!rate.rate) {
-      getRate(rate).then(setRate);
-    }
   }, []);
 
   return (

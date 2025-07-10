@@ -6,17 +6,36 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { currencies } from '@/constants/currencies';
 import { styles } from '@/constants/styles';
+import { setStore } from '@/services/async-stores';
 
 export default function SearchCurrency() {
-  const { field } = useLocalSearchParams<{field:string}>();
+  const { pathname, field } = useLocalSearchParams<{ pathname:string, field:string }>();
 
   const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
 
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Record<string, string>>(currencies);
+
+  const storeKeyAddFrom:string = 'add-favourites-from';
+  const storeKeyAddTo:string = 'add-favourites-to';
+  const storeKeyBase:string = 'convert-field-base';
+  const storeKeyTo:string = 'convert-field-to';
   
-  const handleCurrencyClick = (currencyCode:string) => {
-    return router.push({ pathname: '/add-favourites', params: { field, currencyCode } });
+  const handleCurrencyClick = async (currencyCode:string) => {
+    switch (pathname) {
+      case '/add-favourites':
+        if (field === 'from') setStore(storeKeyAddFrom, currencyCode);
+        if (field === 'to') setStore(storeKeyAddTo, currencyCode);
+        return router.push({ pathname: pathname });
+
+      case '/convert':
+        if (field === 'base') setStore(storeKeyBase, currencyCode);
+        if (field === 'to') setStore(storeKeyTo, currencyCode);
+        return router.push({ pathname: pathname });
+
+      default:
+        return router.push({ pathname: './' });
+    }
   }
   
   const handleSearch = (text:string) => {
@@ -50,7 +69,7 @@ export default function SearchCurrency() {
               {currencyName.of(currencyCode.item)}
             </Text>
           </Pressable>
-        }/>
+        } />
     )
   }
 
