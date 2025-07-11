@@ -3,7 +3,7 @@ const API_URL:string = `https://api.frankfurter.dev/${API_VERSION}`;
 
 import { Rate } from '@/types/rate';
 
-export const getRate = async (rate: Rate) => {
+export const getRate = async (rate: Rate): Promise<Rate> => {
     let url:URL = new URL(`${API_URL}/latest`);
     let parameters:URLSearchParams = new URLSearchParams(url.search);
 

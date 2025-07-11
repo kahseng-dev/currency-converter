@@ -11,30 +11,26 @@ import { getRate } from '@/services/get-rates';
 import { Rate } from '@/types/rate';
 
 export default function Convert() {
-  const [rate, setRate] = useState<Rate>({ from: 'USD', into: 'SGD', rate: 0 });
-  const [fromAmount, setFromAmount] = useState<string>('0.00');
-  const [intoAmount, setIntoAmount] = useState<string>((Number(fromAmount) * rate.rate).toFixed(2));
+  const [ isLoading, setIsLoading ] = useState<boolean>(true);
+  const [ rate, setRate ] = useState<Rate>({ from: 'USD', into: 'SGD', rate: 0 });
+  const [ fromAmount, setFromAmount ] = useState<string>('0.00');
+  const [ intoAmount, setIntoAmount ] = useState<string>((Number(fromAmount) * rate.rate).toFixed(2));
 
   const fetchStoredCurrencies = async () => {
+    setIsLoading(true);
+
     const storedFrom = await getStore(stores.convert_from);
     const storedInto = await getStore(stores.convert_into);
 
-    if (storedFrom && storedInto) { 
-      setRate(previous => ({
-        ...previous,
-        from: storedFrom,
-        into: storedInto,
-      }));
+    if (!storedFrom || !storedInto) return;
 
-      getRate({ from: storedFrom, into: storedInto, rate: 0 })
-        .then((fetchedRate) => {
-          setRate(previous => ({
-            ...previous,
-            rate: fetchedRate.rate
-          }));
-      });
-    }
-  };
+    rate.from = storedFrom;
+    rate.into = storedInto;
+
+    await getRate(rate).then(setRate);
+
+    return setIsLoading(false);
+  }
 
   const autoFillTrailingZero = (amount:number, isDeletion:boolean) => {
     if (!isDeletion) {
@@ -86,9 +82,9 @@ export default function Convert() {
     setIntoAmount(fromAmount);
     setFromAmount(intoAmount);
     setRate(previous => ({
+      ...previous,
       from: previous.into,
       into: previous.from,
-      rate: previous.rate
     }));
   }
 
