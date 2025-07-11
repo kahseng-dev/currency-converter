@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -8,30 +8,18 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { setStore } from '@/services/async-stores';
+import { getAllRates } from '@/services/get-rates';
 
 export default function Details() {
   const { from, into } = useLocalSearchParams<{ from:string, into:string }>();
 
-  const [detailsSpan, setDetailsSpan] = useState('');
-  const [selectedTimeframeOption, setSelectedTimeframeOption] = useState(0);
+  const [ data, setData ] = useState<{ date: string, rate: number }[]>([]);
+  const [ isLoading, setIsLoading ] = useState<boolean>(false);
+  const [ details, setDetails ] = useState<string>('');
+  const [ timeframeOption, setTimeframeOption ] = useState<string>('W');
 
   const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
-  const data = [{
-    'date': '2023-03-12',
-    'rate': 2,
-  },
-  {
-    'date': '2023-03-23',
-    'rate': 1.75,
-  },
-  {
-    'date': '2023-03-27',
-    'rate': 1,
-  },
-  {
-    'date': '2023-03-31',
-    'rate': 1.5,
-  },];
+  const rate = data.length > 0 ? data[data.length - 1].rate : 0; 
   const timeframeOptions = ['W', 'M', '6M', '1Y', '5Y'];
 
   const CustomActiveDot = (props:any) => {
@@ -47,23 +35,43 @@ export default function Details() {
         r={8} />
   )};
 
+  const fetchRatesHistory = async () => {
+    setIsLoading(true);
+
+    let timeframe = getTimeframe();
+
+    let formatData = await getAllRates(from, [into], timeframe)
+      .then(fetchData => {
+        return Object.entries(fetchData.rates).map(([date, rateObject]) => {
+          const value = rateObject[into]
+          
+          if (value === undefined) return { date : date, rate : 0 }
+          
+          return { date : date, rate : value }
+        })
+      })
+    
+    setData(formatData)
+    return setIsLoading(false)
+  }
+
   const handleActiveDotMouseDown = (data: { date:string, rate:number }) => {
     let date = new Date(data.date);
 
-    switch (timeframeOptions[selectedTimeframeOption]) {
+    switch (timeframeOption) {
       case 'W':
-        return setDetailsSpan(date.toLocaleDateString('en-GB', {
+        return setDetails(date.toLocaleDateString('en-GB', {
           weekday: "long",
         }));
       case 'M':
       case '6M':
       case '1Y':
-        return setDetailsSpan(date.toLocaleDateString('en-GB', {
+        return setDetails(date.toLocaleDateString('en-GB', {
           day: '2-digit',
           month: 'long',
         }));
       default:
-        return setDetailsSpan(date.toLocaleDateString('en-GB', {
+        return setDetails(date.toLocaleDateString('en-GB', {
           day: '2-digit',
           month: 'long',
           year: 'numeric',
@@ -72,23 +80,59 @@ export default function Details() {
   };
 
   const handleActiveDotMouseUp = () => {
-    return setDetailsSpan('');
-  };
-
-  const handleChangeTimeframeOption = (index: number) => {
-    return setSelectedTimeframeOption(index);
+    return setDetails('');
   };
 
   const handleConvertCurrency = () => {
     setStore(stores.convert_from, from);
     setStore(stores.convert_into, into);
-
     return router.push({ pathname: '/convert' });
   }
 
+  const getTimeframe = () => {
+    const today:Date = new Date();
+    const startDate:Date = new Date();
+
+    switch(timeframeOption) {
+      case 'W':
+        startDate.setDate(today.getDate() - 7);
+        break
+
+      case 'M':
+        startDate.setMonth(today.getMonth() - 1);
+        break
+
+      case '6M':
+        startDate.setMonth(today.getMonth() - 6);
+        break
+
+      case '1Y':
+        startDate.setFullYear(today.getFullYear() - 1);
+        break 
+
+      case '5Y':
+        startDate.setFullYear(today.getFullYear() - 5);
+        break 
+
+      default:
+        break
+    }
+
+    return `${startDate.toISOString().split('T')[0]}..`.replaceAll(/\s/g,'');
+  }
+
+  const handleChangeTimeframe = (option:string) => {
+    setTimeframeOption(option);
+    return fetchRatesHistory();
+  }
+
+  useEffect(() => {
+    fetchRatesHistory();
+  }, []);
+
   return (
-    <View className='p-8 flex gap-4'>
-      <View className='flex'>
+    <ScrollView className='p-8'>
+      <View className='flex gap-4'>
         <View>
           <Text 
             style={styles.font_mono}
@@ -101,79 +145,79 @@ export default function Details() {
             {currencyName.of(from)} to {currencyName.of(into)}
           </Text>
         </View>
-      </View>
-      <View>
-        <Text 
-          style={styles.font_mono}
-          className='text-xl'>
-          1 {from} = 0 {into}
-        </Text>
-        <Text style={styles.font_mono}>
-          { detailsSpan ? 
-            <Text className={`text-sm ${styles.text_muted}`}>
-              {detailsSpan}
-            </Text>
-            :
-            <Text className={`text-sm flex gap-2 items-center ${styles.text_trending_up}`}>
-              <Ionicons 
-                name='trending-up-outline'
-                size={styles.icon} />
-              Up by 0% ({0} {from})
-            </Text>
-          }
-        </Text>
-      </View>
-      <View>
-        <ResponsiveContainer 
-          height={300}
-          width='100%'>
-          <LineChart
-            data={data}
-            style={styles.font_mono}
-            margin={{ top: 20, right: 5, left: 10, bottom: 5 }}>
-            <CartesianGrid strokeDasharray='5 5' />
-            <Line 
-              stroke={'green'}
-              type='monotone'
-              dataKey='rate'
-              strokeWidth={2}
-              dot={false}
-              activeDot={<CustomActiveDot />}
-              name={`1 ${from}`} />
-            <YAxis orientation='right' />
-            <XAxis dataKey='date' tick={false} />
-            <Tooltip 
-              labelFormatter={ label => `${new Date(label).toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric',
-              })}`}
-              formatter={ value => `${value} ${into}` }
-              separator=' = ' />
-          </LineChart>
-        </ResponsiveContainer>
-        <View className='grid grid-flow-col items-center gap-2'>
-          { timeframeOptions.map((option, index) => 
-            <Pressable 
-              key={option}
-              onPress={() => handleChangeTimeframeOption(index)}
-              className={`${(selectedTimeframeOption == index) && 'bg-neutral-300'} items-center p-2 rounded transition duration-300 hover:bg-neutral-400`}>
-              <Text style={styles.font_mono}>{option}</Text>
-            </Pressable>
-          )}
-        </View>
-      </View>
-      <View className='border border-neutral-500 bg-transparent hover:bg-neutral-300 transition duration-300'>
-        <Pressable 
-          onPress={handleConvertCurrency}
-          className='p-4'>
+        <View>
           <Text 
             style={styles.font_mono}
-            className='text-sm text-center'>
-            Convert {from} to {into}
+            className='text-xl'>
+            1 {from} = {rate} {into}
           </Text>
-        </Pressable>
+          <Text style={styles.font_mono}>
+            { details ? 
+              <Text className={`text-sm ${styles.text_muted}`}>{details}</Text>
+              :
+              <Text className={`text-sm flex gap-2 items-center ${styles.text_trending_up}`}>
+                <Ionicons 
+                  name='trending-up-outline'
+                  size={styles.icon} />
+                Up by {0}% ({0})
+              </Text>
+            }
+          </Text>
+        </View>
+        <View>
+          <ResponsiveContainer 
+            height={300}
+            width='100%'>
+            <LineChart
+              data={data}
+              style={styles.font_mono}
+              margin={{ top: 20, right: 5, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray='5 5' />
+              <Line 
+                stroke={'green'}
+                type='monotone'
+                dataKey='rate'
+                strokeWidth={1}
+                dot={false}
+                activeDot={<CustomActiveDot />}
+                name={`1 ${from}`} />
+              <YAxis 
+                tickCount={4}
+                orientation='right' />
+              <XAxis dataKey='date' tick={false} />
+              <Tooltip 
+                labelFormatter={ label => `${new Date(label).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                })}`}
+                formatter={ value => `${value} ${into}` }
+                separator=' = ' />
+            </LineChart>
+          </ResponsiveContainer>
+          <View className='grid grid-flow-col items-center gap-2'>
+            { timeframeOptions.map(option => 
+              <Pressable 
+                key={option}
+                onPress={() => handleChangeTimeframe(option)}
+                className={`${timeframeOption === option && 'bg-neutral-300'} items-center p-2 rounded transition duration-300 hover:bg-neutral-400`}>
+                <Text style={styles.font_mono}>{option}</Text>
+              </Pressable>
+            )}
+          </View>
+        </View>
+        <View className='border border-neutral-500 bg-transparent hover:bg-neutral-300 transition duration-300'>
+          <Pressable 
+            onPress={handleConvertCurrency}
+            className='p-4'>
+            <Text 
+              style={styles.font_mono}
+              className='text-sm text-center'>
+              Convert {from} to {into}
+            </Text>
+          </Pressable>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }

@@ -3,6 +3,22 @@ const API_URL:string = `https://api.frankfurter.dev/${API_VERSION}`;
 
 import { Rate } from '@/types/rate';
 
+interface RateData {
+  [currencyCode: string]: number;
+}
+
+interface RatesByDate {
+  [date: string]: RateData;
+}
+
+interface APIResponse {
+  amount: number;
+  base: string;
+  start_date: string;
+  end_date: string;
+  rates: RatesByDate;
+}
+
 export const getRate = async (rate: Rate): Promise<Rate> => {
     let url:URL = new URL(`${API_URL}/latest`);
     let parameters:URLSearchParams = new URLSearchParams(url.search);
@@ -72,14 +88,11 @@ export const getRates = async (rates: Rate[]) => {
     }
 }
 
-export const getAllRates = async (base?: string, symbols?: string[], date?: string) => {
+export const getAllRates = async (base?: string, symbols?: string[], date?: string):Promise<APIResponse> => {
     let url:URL = new URL(`${API_URL}/latest`)
     let parameters:URLSearchParams = new URLSearchParams(url.search)
 
-    if (date) {
-        date = new Date().toISOString().split('T')[0]
-        url = new URL(`${API_URL}/${date}`)
-    }
+    if (date) url = new URL(`${API_URL}/${date}`)
 
     if (base) parameters.append('base', base)
     
