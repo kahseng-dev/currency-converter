@@ -1,6 +1,6 @@
 import { Link, router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -11,8 +11,8 @@ import { getRates } from '@/services/get-rates';
 import { Rate } from '@/types/rate';
 
 export default function Index() {
-  const [data, setData] = useState<Rate[]>();
-  const [rates, setRates] = useState<{ favourites: Rate[], popular: Rate[] }>(
+  const [ data, setData ] = useState<Rate[]>();
+  const [ rates, setRates ] = useState<{ favourites: Rate[], popular: Rate[] }>(
     {
       favourites: [
         { from: 'USD', into: 'SGD', rate: 0 }, 
@@ -27,14 +27,15 @@ export default function Index() {
   )
 
   const fetchStoredFavourites = async () => {
-    const storedFavourites = await getStore(stores.home_favourites)
+    const storedFavourites = await getStore(stores.home_favourites);
 
-    if (storedFavourites) { 
-      setRates(previous => ({
-        ...previous,
-        favourites: JSON.parse(storedFavourites)
-      }))
-    }
+    if (!storedFavourites) return
+
+    rates.favourites = JSON.parse(storedFavourites)
+
+    setRates(rates)
+
+    getRates([...rates.favourites, ...rates.popular]).then(setData);
   }
 
   const handleViewDetails = (from: string, into: string) => {
@@ -101,40 +102,38 @@ export default function Index() {
 
   useEffect(() => {
     fetchStoredFavourites();
-    
-    if (!data) {
-      getRates([...rates.favourites, ...rates.popular]).then(setData);
-    }
   }, []);
 
   return (
-    <View className='p-8 flex gap-4 bg-white h-screen'>
-      <View className='flex flex-row justify-between'>
+    <ScrollView>
+      <View className='p-8 flex gap-4 bg-white'>
+        <View className='flex flex-row justify-between'>
+          <Text 
+            style={styles.font_mono}
+            className='text-xl'>
+              Rates
+          </Text>
+          <Link 
+            href='/add-favourites'
+            className='size-8 flex items-center justify-center rounded-full bg-neutral-300'>
+            <Ionicons 
+              name='add-outline'
+              size={styles.icon} />
+          </Link>
+        </View>
         <Text 
           style={styles.font_mono}
-          className='text-xl'>
-            Rates
+          className='py-1 border-b border-neutral-300'>
+          Favourites
         </Text>
-        <Link 
-          href='/add-favourites'
-          className='size-8 flex items-center justify-center rounded-full bg-neutral-300'>
-          <Ionicons 
-            name='add-outline'
-            size={styles.icon} />
-        </Link>
+        {loadFavourites()}
+        <Text 
+          style={styles.font_mono}
+          className='py-1 border-b border-neutral-300'>
+          Popular
+        </Text>
+        {loadPopular()}
       </View>
-      <Text 
-        style={styles.font_mono}
-        className='py-1 border-b border-neutral-300'>
-        Favourites
-      </Text>
-      {loadFavourites()}
-      <Text 
-        style={styles.font_mono}
-        className='py-1 border-b border-neutral-300'>
-        Popular
-      </Text>
-      {loadPopular()}
-    </View>
+    </ScrollView>
   );
 }
