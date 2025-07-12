@@ -27,9 +27,7 @@ export default function Settings() {
 
   const handleThemeChange = (value:string) => {
     setTheme(value);
-    setStore(stores.app_theme, value);
-    
-    return 
+    return setStore(stores.app_theme, value);
   }
 
   useEffect(() => {
@@ -37,7 +35,7 @@ export default function Settings() {
   }, []);
 
   return (
-    <View className='p-8 flex gap-4'>
+    <View className='p-8 gap-4'>
       <Text 
         style={styles.font_mono}
         className='py-1 border-b border-neutral-300'>
@@ -66,6 +64,7 @@ export default function Settings() {
             <Text style={styles.font_mono}>Github Repo</Text>
           </View>
           <Ionicons 
+            className='pr-2'
             name='chevron-forward-outline'
             size={styles.icon} />
         </Link>
@@ -82,11 +81,12 @@ export default function Settings() {
             <Text style={styles.font_mono}>Checkout my other projects</Text>
           </View>
           <Ionicons 
+            className='pr-2'
             name='chevron-forward-outline'
             size={styles.icon} />
         </Link>
       </View>
       { APP_VERSION && <Text style={styles.font_mono}>Version {APP_VERSION}</Text> }
     </View>
-  );
+  )
 }
