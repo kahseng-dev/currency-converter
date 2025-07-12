@@ -105,8 +105,8 @@ export default function Index() {
   }, []);
 
   return (
-    <ScrollView>
-      <View className='p-8 flex gap-4 bg-white'>
+    <ScrollView className='bg-white'>
+      <View className='p-8 flex gap-4'>
         <View className='flex flex-row justify-between'>
           <Text 
             style={styles.font_mono}

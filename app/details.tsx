@@ -31,7 +31,7 @@ export default function Details() {
       <circle
         onMouseDown={() => handleActiveDotMouseDown(payload)}
         onMouseUp={() => setIsDotClick(false)}
-        className={`${isUpTrend ? 'fill-green-800': 'fill-red-800'} cursor-pointer stroke-white stroke-2`}
+        className={`${isUpTrend ? 'fill-green-800' : 'fill-red-800'} cursor-pointer stroke-white stroke-2`}
         cx={cx}
         cy={cy}
         r={8} />
@@ -58,7 +58,7 @@ export default function Details() {
           return { date : date, rate : value }
         })
       })
-
+      
     setData(formatData)
 
     const oldestRate = formatData[0].rate;
@@ -170,9 +170,9 @@ export default function Details() {
             { isDotClick ? 
               <Text className={`text-sm ${styles.text_muted}`}>{dateDetails}</Text>
               :
-              <Text className={`${isUpTrend ? 'text-green-800': 'text-red-800'} text-sm flex gap-2 items-center`}>
+              <Text className={`${isUpTrend ? 'text-green-800' : 'text-red-800'} text-sm flex gap-2 items-center`}>
                 <Ionicons 
-                  name={isUpTrend ? 'trending-up-outline': 'trending-down-outline'}
+                  name={isUpTrend ? 'trending-up-outline' : 'trending-down-outline'}
                   size={styles.icon} />
                 {trendDetails}
               </Text>
