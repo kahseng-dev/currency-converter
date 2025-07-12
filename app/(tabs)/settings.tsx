@@ -1,3 +1,4 @@
+import * as Application from 'expo-application';
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -12,16 +13,14 @@ import { getStore, setStore } from '@/services/async-stores';
 export default function Settings() {
   const [ theme, setTheme ] = useState<string>('');
 
-  const APP_VERSION:string = '0.1.0';
+  const APP_VERSION = Application.nativeApplicationVersion;
   const REPO_LINK = 'https://github.com/kahseng-dev/currency-converter';
   const WEBSITE_LINK = 'https://kahseng.is-a.dev/';
 
   const fetchStoredTheme = async () => {
     const storedTheme = await getStore(stores.app_theme);
 
-    if (!storedTheme) {
-      return setTheme('auto');
-    }
+    if (!storedTheme) return setTheme('auto');
 
     return setTheme(storedTheme);
   }
@@ -29,6 +28,8 @@ export default function Settings() {
   const handleThemeChange = (value:string) => {
     setTheme(value);
     setStore(stores.app_theme, value);
+    
+    return 
   }
 
   useEffect(() => {
@@ -85,9 +86,7 @@ export default function Settings() {
             size={styles.icon} />
         </Link>
       </View>
-      <Text style={styles.font_mono}>
-        Version {APP_VERSION}
-      </Text>
+      { APP_VERSION && <Text style={styles.font_mono}>Version {APP_VERSION}</Text> }
     </View>
   );
 }
