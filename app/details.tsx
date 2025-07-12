@@ -7,19 +7,21 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
-import { setStore } from '@/services/async-stores';
+import { getStore, setStore } from '@/services/async-stores';
 import { getAllRates } from '@/services/get-rates';
 
 export default function Details() {
   const { from, into } = useLocalSearchParams<{ from:string, into:string }>();
 
+  const [ isDotClick, setIsDotClick ] = useState<boolean>(false);
+  const [ isUpTrend, setIsUpTrend ] = useState<boolean>(true);
+  
   const [ data, setData ] = useState<{ date: string, rate: number }[]>([]);
-  const [ isLoading, setIsLoading ] = useState<boolean>(false);
-  const [ details, setDetails ] = useState<string>('');
+  const [ trendDetails, setTrendDetails ] = useState<string>('');
+  const [ dateDetails, setDateDetails ] = useState<string>('');
   const [ timeframeOption, setTimeframeOption ] = useState<string>('W');
 
   const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
-  const rate = data.length > 0 ? data[data.length - 1].rate : 0; 
   const timeframeOptions = ['W', 'M', '6M', '1Y', '5Y'];
 
   const CustomActiveDot = (props:any) => {
@@ -28,19 +30,25 @@ export default function Details() {
     return (
       <circle
         onMouseDown={() => handleActiveDotMouseDown(payload)}
-        onMouseUp={handleActiveDotMouseUp}
-        className='cursor-pointer stroke-white stroke-2 fill-green-700'
+        onMouseUp={() => setIsDotClick(false)}
+        className={`${isUpTrend ? 'fill-green-800': 'fill-red-800'} cursor-pointer stroke-white stroke-2`}
         cx={cx}
         cy={cy}
         r={8} />
-  )};
+  )}
+
+  const fetchStores = async () => {
+    const storedTimeframeOption = await getStore(stores.details_timeframe_option);
+
+    if (!storedTimeframeOption) return
+
+    return setTimeframeOption(storedTimeframeOption);
+  }
 
   const fetchRatesHistory = async () => {
-    setIsLoading(true);
+    const timeframe = getTimeframe();
 
-    let timeframe = getTimeframe();
-
-    let formatData = await getAllRates(from, [into], timeframe)
+    const formatData = await getAllRates(from, [into], timeframe)
       .then(fetchData => {
         return Object.entries(fetchData.rates).map(([date, rateObject]) => {
           const value = rateObject[into]
@@ -50,43 +58,54 @@ export default function Details() {
           return { date : date, rate : value }
         })
       })
-    
+
     setData(formatData)
-    return setIsLoading(false)
+
+    const oldestRate = formatData[0].rate;
+    const currentRate = formatData[formatData.length - 1].rate;
+    const rateChange = currentRate - oldestRate;
+    const rateChangePercentage = 100 * (currentRate - oldestRate) / oldestRate;
+    
+    if (currentRate < oldestRate) setIsUpTrend(false);
+
+    return setTrendDetails(`${isUpTrend ? 'Up' : 'Down'} by ${rateChangePercentage.toFixed(2)}% (${rateChange.toFixed(4)} ${into})`);
   }
 
   const handleActiveDotMouseDown = (data: { date:string, rate:number }) => {
-    let date = new Date(data.date);
+    let date:Date = new Date(data.date);
+    let locals:Intl.LocalesArgument = 'en-GB';
+    let options:Intl.DateTimeFormatOptions = {};
 
     switch (timeframeOption) {
       case 'W':
-        return setDetails(date.toLocaleDateString('en-GB', {
-          weekday: "long",
-        }));
+        options = { weekday: 'long', }
+        break 
       case 'M':
       case '6M':
       case '1Y':
-        return setDetails(date.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: 'long',
-        }));
+        options = { day: 'numeric', month: 'long', }
+        break
       default:
-        return setDetails(date.toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric',
-        }));
+        options = { day: 'numeric', month: 'long', year: 'numeric', }
+        break
     }
-  };
 
-  const handleActiveDotMouseUp = () => {
-    return setDetails('');
-  };
+    if (!Object.keys(options).length) return
+    
+    setDateDetails(date.toLocaleDateString(locals, options));
+    return setIsDotClick(true);
+  }
 
   const handleConvertCurrency = () => {
     setStore(stores.convert_from, from);
     setStore(stores.convert_into, into);
     return router.push({ pathname: '/convert' });
+  }
+
+  const handleChangeTimeframe = (option:string) => {
+    setTimeframeOption(option);
+    setStore(stores.details_timeframe_option, option);
+    return fetchRatesHistory();
   }
 
   const getTimeframe = () => {
@@ -121,12 +140,8 @@ export default function Details() {
     return `${startDate.toISOString().split('T')[0]}..`.replaceAll(/\s/g,'');
   }
 
-  const handleChangeTimeframe = (option:string) => {
-    setTimeframeOption(option);
-    return fetchRatesHistory();
-  }
-
   useEffect(() => {
+    fetchStores();
     fetchRatesHistory();
   }, []);
 
@@ -149,17 +164,17 @@ export default function Details() {
           <Text 
             style={styles.font_mono}
             className='text-xl'>
-            1 {from} = {rate} {into}
+            1 {from} = {data.length > 0 ? data[data.length - 1].rate : 0} {into}
           </Text>
           <Text style={styles.font_mono}>
-            { details ? 
-              <Text className={`text-sm ${styles.text_muted}`}>{details}</Text>
+            { isDotClick ? 
+              <Text className={`text-sm ${styles.text_muted}`}>{dateDetails}</Text>
               :
-              <Text className={`text-sm flex gap-2 items-center ${styles.text_trending_up}`}>
+              <Text className={`${isUpTrend ? 'text-green-800': 'text-red-800'} text-sm flex gap-2 items-center`}>
                 <Ionicons 
-                  name='trending-up-outline'
+                  name={isUpTrend ? 'trending-up-outline': 'trending-down-outline'}
                   size={styles.icon} />
-                Up by {0}% ({0})
+                {trendDetails}
               </Text>
             }
           </Text>
@@ -174,7 +189,7 @@ export default function Details() {
               margin={{ top: 20, right: 5, left: 10, bottom: 5 }}>
               <CartesianGrid strokeDasharray='5 5' />
               <Line 
-                stroke={'green'}
+                stroke={isUpTrend ? 'green': 'darkred'}
                 type='monotone'
                 dataKey='rate'
                 strokeWidth={1}
@@ -186,11 +201,7 @@ export default function Details() {
                 orientation='right' />
               <XAxis dataKey='date' tick={false} />
               <Tooltip 
-                labelFormatter={ label => `${new Date(label).toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })}`}
+                labelFormatter={ label => `${new Date(label).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', })}`}
                 formatter={ value => `${value} ${into}` }
                 separator=' = ' />
             </LineChart>
