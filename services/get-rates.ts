@@ -26,7 +26,11 @@ export const getRate = async (rate: Rate): Promise<Rate> => {
     parameters.append('base', rate.from);
     parameters.append('symbols', rate.into);
 
-    const response = await fetch(`${url.toString()}?${parameters.toString()}`);
+    const controller = new AbortController()
+
+    const response = await fetch(`${url.toString()}?${parameters.toString()}`, {
+        signal: controller.signal
+    });
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -35,6 +39,8 @@ export const getRate = async (rate: Rate): Promise<Rate> => {
     const data = await response.json();
 
     rate.rate = data.rates[rate.into];
+
+    controller.abort()
 
     return rate;
 }
@@ -66,13 +72,21 @@ export const getRates = async (rates: Rate[]) => {
         parameters.append('base', rate.base)
         parameters.append('symbols', rate.symbols.join())
 
-        const response = await fetch(`${url.toString()}?${parameters.toString()}`)
+        const controller = new AbortController()
+
+        const response = await fetch(`${url.toString()}?${parameters.toString()}`, {
+            signal: controller.signal
+        })
 
         await new Promise((resolve) => setTimeout(resolve, 2000))
 
         if (!response.ok) throw console.error(`Failed to fetch data: ${response.status}`)
 
-        return await response.json()
+        const data = await response.json()
+
+        controller.abort()
+
+        return data
     }))
 
     if (dataList) {
@@ -98,11 +112,19 @@ export const getAllRates = async (base?: string, symbols?: string[], date?: stri
     
     if (symbols) parameters.append('symbols', symbols.join())
 
-    const response = await fetch(`${url.toString()}?${parameters.toString()}`)
+    const controller = new AbortController()
+
+    const response = await fetch(`${url.toString()}?${parameters.toString()}`, {
+        signal: controller.signal
+    })
 
     await new Promise((resolve) => setTimeout(resolve, 2000))
 
     if (!response.ok) throw console.error(`Failed to fetch data: ${response.status}`)
 
-    return await response.json();
+    const data = await response.json()
+
+    controller.abort()
+
+    return data
 }
