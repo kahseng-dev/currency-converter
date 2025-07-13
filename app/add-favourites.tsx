@@ -11,6 +11,8 @@ import { getStore, removeStore, setStore } from '@/services/async-stores';
 import { Rate } from '@/types/rate';
 
 export default function AddFavourites() {
+  const [ isDuplicate, setIsDuplicate ] = useState<boolean>(false);
+
   const [ from, setFrom ] = useState<string>('');
   const [ into, setInto ] = useState<string>('');
   const [ favourites, setFavourites ] = useState<Rate[]>([
@@ -87,10 +89,6 @@ export default function AddFavourites() {
     router.push({ pathname: '/search-currency', params: { pathname: '/add-favourites', field: field } });
   }
 
-  const loadSearchResults = () => {
-    return 
-  }
-
   const handleClearField = async (field:string) => {
     if (field === 'from') {
       await removeStore(stores.add_favourites_from);
@@ -104,13 +102,15 @@ export default function AddFavourites() {
   }
 
   const handleAddRate = () => {
-    let rate = { from: from, into: into, rate: 0 };
-
-    if (favourites.some(favourite => favourite.from === rate.from && favourite.into === rate.into)) {
-      return 
+    if (favourites.some(favourite => favourite.from === from && favourite.into === into)) {
+      setIsDuplicate(true)
+      
+      return setTimeout(() => {
+        setIsDuplicate(false)
+      }, 3000)
     }
 
-    favourites.push(rate);
+    favourites.push({ from: from, into: into, rate: 0 });
     setFavourites(favourites);
     setStore(stores.home_favourites, JSON.stringify(favourites));
     return router.push({ pathname: './' });
@@ -132,7 +132,7 @@ export default function AddFavourites() {
 
   return (
     <ScrollView className='p-4'>
-      <View className='mb-4 flex gap-4'>
+      <View className='flex gap-4 mb-4'>
         <Pressable 
           onPress={() => handleFieldClick('from')}
           className='p-4 border border-neutral-300 bg-white rounded'>
@@ -211,13 +211,23 @@ export default function AddFavourites() {
           {loadAllCurrencies()}
         </View>
         :
-        <Pressable onPress={handleAddRate}>
+        <>
+          <Pressable onPress={handleAddRate}>
+            <Text 
+              style={styles.font_mono}
+              className='p-4 text-center bg-white text-sm rounded border border-neutral-300 bg-transparent hover:bg-neutral-300 transition duration-300'>
+              Add {from} to {into}
+            </Text>
+          </Pressable>
           <Text 
             style={styles.font_mono}
-            className='p-4 text-center bg-white text-sm rounded border border-neutral-300 bg-transparent hover:bg-neutral-300 transition duration-300'>
-            Add {from} to {into}
+            className={`${isDuplicate ? 'opacity-100' : 'opacity-0'} p-2 mt-4 gap-2 flex bg-neutral-900 text-white rounded transition duration-300`}>
+            <Ionicons 
+              name='alert-circle-outline'
+              size={styles.icon} />
+            {from} to {into} is already favourited.
           </Text>
-        </Pressable>
+        </>
       }
     </ScrollView>
   );
