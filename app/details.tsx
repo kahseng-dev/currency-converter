@@ -17,7 +17,7 @@ export default function Details() {
   const [ isDotClick, setIsDotClick ] = useState<boolean>(false);
   const [ isUpTrend, setIsUpTrend ] = useState<boolean>(true);
   const [ isFavourite, setIsFavourite ] = useState<boolean>(false);
-  
+
   const [ data, setData ] = useState<{ date: string, rate: number }[]>([]);
   const [ trendDetails, setTrendDetails ] = useState<string>('');
   const [ dateDetails, setDateDetails ] = useState<string>('');
@@ -40,33 +40,28 @@ export default function Details() {
   )}
 
   const fetchStores = async () => {
-    const storedTimeframeOption = await getStore(stores.details_timeframe_option);
     const storedFavourites = await getStore(stores.home_favourites);
     
-    let favourites:Rate[] = [];
+    if (!storedFavourites) return
 
-    if (!storedTimeframeOption) return;
-    if (!storedFavourites) return;
-
-    favourites = JSON.parse(storedFavourites);
+    let favourites:Rate[] = JSON.parse(storedFavourites);
+    let isFavourite = favourites.some(favourite => favourite.from === from && favourite.into === into)
     
-    if (favourites.some(favourite => favourite.from === from && favourite.into === into)) {
-      setIsFavourite(true);
-    }
+    if (!isFavourite) setIsFavourite(false);
 
-    return setTimeframeOption(storedTimeframeOption);
+    return setIsFavourite(true);
   }
 
   const fetchRatesHistory = async () => {
     const timeframe = getTimeframe();
-
+    
     const formatData = await getAllRates(from, [into], timeframe)
       .then(fetchData => {
         return Object.entries(fetchData.rates).map(([date, rateObject]) => {
           return { date : date, rate : rateObject[into] }
         })
       })
-
+    
     setData(formatData)
 
     const oldestRate = formatData[0].rate;
@@ -108,12 +103,6 @@ export default function Details() {
     setStore(stores.convert_from, from);
     setStore(stores.convert_into, into);
     return router.push({ pathname: '/convert' });
-  }
-
-  const handleChangeTimeframe = (option:string) => {
-    setTimeframeOption(option);
-    setStore(stores.details_timeframe_option, option);
-    return fetchRatesHistory();
   }
 
   const handleFavouriteClick = async () => {
@@ -173,8 +162,11 @@ export default function Details() {
 
   useEffect(() => {
     fetchStores();
-    fetchRatesHistory();
   }, []);
+
+  useEffect(() => {
+    fetchRatesHistory();
+  }, [timeframeOption]);
 
   return (
     <ScrollView className='p-8'>
@@ -251,7 +243,7 @@ export default function Details() {
             { timeframeOptions.map(option => 
               <Pressable 
                 key={option}
-                onPress={() => handleChangeTimeframe(option)}
+                onPress={() => setTimeframeOption(option)}
                 className={`${timeframeOption === option && 'bg-neutral-300'} items-center p-2 rounded transition duration-300 hover:bg-neutral-400`}>
                 <Text style={styles.font_mono}>{option}</Text>
               </Pressable>
