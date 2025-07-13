@@ -113,7 +113,7 @@ export default function AddFavourites() {
     favourites.push({ from: from, into: into, rate: 0 });
     setFavourites(favourites);
     setStore(stores.home_favourites, JSON.stringify(favourites));
-    return router.push({ pathname: './' });
+    return router.dismissTo({ pathname: './' });
   }
 
   const fetchStoredCurrencies = async () => {

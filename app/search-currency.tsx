@@ -12,17 +12,17 @@ import { setStore } from '@/services/async-stores';
 export default function SearchCurrency() {
   const { pathname, field } = useLocalSearchParams<{ pathname:string, field:string }>();
 
-  const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
-
   const [search, setSearch] = useState('');
   const [searchResults, setSearchResults] = useState<Record<string, string>>(currencies);
 
+  const currencyName = new Intl.DisplayNames(['en'], { type: 'currency' });
+  
   const handleCurrencyClick = async (currencyCode:string) => {
     switch (pathname) {
       case '/add-favourites':
         if (field === 'from') setStore(stores.add_favourites_from, currencyCode);
         if (field === 'into') setStore(stores.add_favourites_into, currencyCode);
-        return router.push({ pathname: pathname });
+        return router.dismissTo({ pathname: pathname });
 
       case '/convert':
         if (field === 'from') setStore(stores.convert_from, currencyCode);
@@ -30,7 +30,7 @@ export default function SearchCurrency() {
         return router.push({ pathname: pathname });
 
       default:
-        return router.push({ pathname: './' });
+        return router.dismissTo({ pathname: './' });
     }
   }
   
