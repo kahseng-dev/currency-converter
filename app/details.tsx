@@ -9,12 +9,14 @@ import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { getStore, setStore } from '@/services/async-stores';
 import { getAllRates } from '@/services/get-rates';
+import { Rate } from '@/types/rate';
 
 export default function Details() {
   const { from, into } = useLocalSearchParams<{ from:string, into:string }>();
 
   const [ isDotClick, setIsDotClick ] = useState<boolean>(false);
   const [ isUpTrend, setIsUpTrend ] = useState<boolean>(true);
+  const [ isFavourite, setIsFavourite ] = useState<boolean>(false);
   
   const [ data, setData ] = useState<{ date: string, rate: number }[]>([]);
   const [ trendDetails, setTrendDetails ] = useState<string>('');
@@ -39,8 +41,18 @@ export default function Details() {
 
   const fetchStores = async () => {
     const storedTimeframeOption = await getStore(stores.details_timeframe_option);
+    const storedFavourites = await getStore(stores.home_favourites);
+    
+    let favourites:Rate[] = [];
 
-    if (!storedTimeframeOption) return
+    if (!storedTimeframeOption) return;
+    if (!storedFavourites) return;
+
+    favourites = JSON.parse(storedFavourites);
+    
+    if (favourites.some(favourite => favourite.from === from && favourite.into === into)) {
+      setIsFavourite(true);
+    }
 
     return setTimeframeOption(storedTimeframeOption);
   }
@@ -58,7 +70,7 @@ export default function Details() {
           return { date : date, rate : value }
         })
       })
-      
+    
     setData(formatData)
 
     const oldestRate = formatData[0].rate;
@@ -108,6 +120,29 @@ export default function Details() {
     return fetchRatesHistory();
   }
 
+  const handleFavouriteClick = async () => {
+    let rate:Rate = { from: from, into: into, rate: 0 }
+    const storedFavourites = await getStore(stores.home_favourites);
+
+    if (!storedFavourites) {
+      setStore(stores.home_favourites, JSON.stringify([rate]));
+      return setIsFavourite(true);
+    }
+
+    let favourites:Rate[] = [];
+    favourites = JSON.parse(storedFavourites);
+    
+    if (isFavourite) {
+      let filteredFavourites = favourites.filter(favourite => !(favourite.from === from && favourite.into === into))
+      setStore(stores.home_favourites, JSON.stringify(filteredFavourites));
+      return setIsFavourite(false);
+    }
+    
+    favourites.push(rate);
+    setStore(stores.home_favourites, JSON.stringify(favourites));
+    return setIsFavourite(true);
+  }
+
   const getTimeframe = () => {
     const today:Date = new Date();
     const startDate:Date = new Date();
@@ -148,17 +183,27 @@ export default function Details() {
   return (
     <ScrollView className='p-8'>
       <View className='flex gap-4'>
-        <View>
-          <Text 
-            style={styles.font_mono}
-            className='text-xl'>
-            {from} to {into}
-          </Text>
-          <Text 
-            style={styles.font_mono}
-            className={`text-sm ${styles.text_muted}`}>
-            {currencyName.of(from)} to {currencyName.of(into)}
-          </Text>
+        <View className='flex-row justify-between items-center'>
+          <View>
+            <Text 
+              style={styles.font_mono}
+              className='text-xl'>
+              {from} to {into}
+            </Text>
+            <Text 
+              style={styles.font_mono}
+              className={`text-sm ${styles.text_muted}`}>
+              {currencyName.of(from)} to {currencyName.of(into)}
+            </Text>
+          </View>
+          <Pressable
+            onPress={handleFavouriteClick}
+            className='size-8 justify-center items-center rounded-full duration-300 transition hover:bg-orange-200'>
+            <Ionicons 
+              name={isFavourite ? 'star' : 'star-outline'}
+              color='#fb923c'
+              size={styles.icon} />
+          </Pressable>
         </View>
         <View>
           <Text 
