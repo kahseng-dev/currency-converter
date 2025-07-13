@@ -63,14 +63,10 @@ export default function Details() {
     const formatData = await getAllRates(from, [into], timeframe)
       .then(fetchData => {
         return Object.entries(fetchData.rates).map(([date, rateObject]) => {
-          const value = rateObject[into]
-          
-          if (value === undefined) return { date : date, rate : 0 }
-          
-          return { date : date, rate : value }
+          return { date : date, rate : rateObject[into] }
         })
       })
-    
+
     setData(formatData)
 
     const oldestRate = formatData[0].rate;
@@ -80,7 +76,7 @@ export default function Details() {
     
     if (currentRate < oldestRate) setIsUpTrend(false);
 
-    return setTrendDetails(`${isUpTrend ? 'Up' : 'Down'} by ${rateChangePercentage.toFixed(2)}% (${rateChange.toFixed(4)} ${into})`);
+    return setTrendDetails(`${isUpTrend ? 'Up' : 'Down'} by ${!isNaN(rateChangePercentage) ? rateChangePercentage.toFixed(2) : 0}% (${rateChange.toFixed(4)} ${into})`);
   }
 
   const handleActiveDotMouseDown = (data: { date:string, rate:number }) => {
