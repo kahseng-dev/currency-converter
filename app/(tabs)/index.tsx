@@ -1,8 +1,10 @@
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
+
+import RateIndicator from '@/components/index/rate-indicator';
 
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
@@ -12,6 +14,7 @@ import { Rate } from '@/types/rate';
 
 export default function Index() {
   const [ data, setData ] = useState<Rate[]>();
+  const [ isLoading, setIsLoading ] = useState<boolean>(true);
   const [ rates, setRates ] = useState<{ favourites: Rate[], popular: Rate[] }>(
     {
       favourites: [
@@ -35,69 +38,14 @@ export default function Index() {
 
     setRates(rates)
 
-    getRates([...rates.favourites, ...rates.popular]).then(setData);
-  }
+    const data = await getRates([...rates.favourites, ...rates.popular]);
 
-  const handleViewDetails = (from: string, into: string) => {
-    return router.push({ pathname: '/details', params: { from, into } });
-  }
+    if (data) {
+      setData(data);
+      setIsLoading(false);
+    }
 
-  const loadFavourites = () => {
-    return <View>
-      { rates.favourites.length === 0 ? 
-        <View>
-          <Text style={styles.font_mono}>
-            ⭐ You haven’t added any favourite rates yet.
-          </Text>
-        </View>
-        :
-        <View>
-          { rates.favourites.map((rate, index) => 
-            <Pressable
-              onPress={() => handleViewDetails(rate.from, rate.into)}
-              key={index}
-              className='p-4 flex flex-row gap-4 duration-300 transition hover:bg-neutral-300'>
-              <View>
-                <Text style={styles.font_mono}>{rate.from}</Text>
-                <Text style={styles.font_mono}>{rate.into}</Text>
-              </View>
-              <View>
-                <Text style={styles.font_mono}>{rate.from} to {rate.into}</Text>
-                <Text 
-                  className='text-neutral-500'
-                  style={styles.font_mono}>
-                  1 {rate.from} = {rate.rate.toFixed(4)} {rate.into}
-                </Text>
-              </View>
-            </Pressable>
-          )}
-        </View>
-      }
-    </View>
-  }
-
-  const loadPopular = () => {
-    return <View>
-      { rates.popular.map((rate, index) => 
-        <Pressable
-          onPress={() => handleViewDetails(rate.from, rate.into)}
-          key={index}
-          className='p-4 flex flex-row gap-4 duration-300 transition hover:bg-neutral-300'>
-          <View>
-            <Text style={styles.font_mono}>{rate.from}</Text>
-            <Text style={styles.font_mono}>{rate.into}</Text>
-          </View>
-          <View>
-            <Text style={styles.font_mono}>{rate.from} to {rate.into}</Text>
-            <Text 
-              className='text-neutral-500'
-              style={styles.font_mono}>
-              1 {rate.from} = {rate.rate.toFixed(4)} {rate.into}
-            </Text>
-          </View>
-        </Pressable>
-      )}
-    </View>
+    return 
   }
 
   useEffect(() => {
@@ -126,13 +74,25 @@ export default function Index() {
           className='py-1 border-b border-neutral-300'>
           Favourites
         </Text>
-        {loadFavourites()}
+        { rates.favourites.length === 0 ? 
+          <Text style={styles.font_mono}>
+            ⭐ You haven’t added any favourite rates yet.
+          </Text>
+          :
+          <>
+          { rates.favourites.map((rate, index) => 
+            <RateIndicator isLoading={isLoading} rate={rate} key={index} />
+          )}
+          </>
+        }
         <Text 
           style={styles.font_mono}
           className='py-1 border-b border-neutral-300'>
           Popular
         </Text>
-        {loadPopular()}
+        { rates.popular.map((rate, index) => 
+          <RateIndicator isLoading={isLoading} rate={rate} key={index} />
+        )}
       </View>
     </ScrollView>
   );
