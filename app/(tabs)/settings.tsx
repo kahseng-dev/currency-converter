@@ -1,4 +1,4 @@
-import * as Application from 'expo-application';
+import { nativeApplicationVersion } from 'expo-application';
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -11,9 +11,10 @@ import { styles } from '@/constants/styles';
 import { getStore, setStore } from '@/services/async-stores';
 
 export default function Settings() {
+  
   const [ theme, setTheme ] = useState<string>('');
 
-  const APP_VERSION = Application.nativeApplicationVersion;
+  const APP_VERSION = nativeApplicationVersion;
   const REPO_LINK = 'https://github.com/kahseng-dev/currency-converter';
   const WEBSITE_LINK = 'https://kahseng.is-a.dev/';
 
