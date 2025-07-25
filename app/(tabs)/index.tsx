@@ -1,11 +1,12 @@
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import RateIndicator from '@/components/index/rate-indicator';
 
+import CustomText from '@/components/custom-text';
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { getStore } from '@/services/async-stores';
@@ -53,14 +54,10 @@ export default function Index() {
   }, []);
 
   return (
-    <ScrollView className='bg-white'>
+    <ScrollView>
       <View className='p-8 flex gap-4'>
         <View className='flex flex-row justify-between'>
-          <Text 
-            style={styles.font_mono}
-            className='text-xl'>
-              Rates
-          </Text>
+          <CustomText className='text-xl'>Rates</CustomText>
           <Link 
             href='/add-favourites'
             className='size-8 flex items-center justify-center rounded-full bg-neutral-300'>
@@ -69,31 +66,27 @@ export default function Index() {
               size={styles.icon} />
           </Link>
         </View>
-        <Text 
-          style={styles.font_mono}
-          className='py-1 border-b border-neutral-300'>
-          Favourites
-        </Text>
+        <CustomText className='py-1 border-b border-neutral-300'>Favourites</CustomText>
         { rates.favourites.length === 0 ? 
-          <Text style={styles.font_mono}>
-            ⭐ You haven’t added any favourite rates yet.
-          </Text>
+          <CustomText>⭐ You haven’t added any favourite rates yet.</CustomText>
           :
           <>
-          { rates.favourites.map((rate, index) => 
-            <RateIndicator isLoading={isLoading} rate={rate} key={index} />
-          )}
+            { rates.favourites.map((rate, index) => 
+              <RateIndicator 
+                key={index} 
+                isLoading={isLoading} 
+                rate={rate} />
+            )}
           </>
         }
-        <Text 
-          style={styles.font_mono}
-          className='py-1 border-b border-neutral-300'>
-          Popular
-        </Text>
+        <CustomText className='py-1 border-b border-neutral-300'>Popular</CustomText>
         { rates.popular.map((rate, index) => 
-          <RateIndicator isLoading={isLoading} rate={rate} key={index} />
+          <RateIndicator 
+            key={index}
+            isLoading={isLoading} 
+            rate={rate} />
         )}
       </View>
     </ScrollView>
-  );
+  )
 }
