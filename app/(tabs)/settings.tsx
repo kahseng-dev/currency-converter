@@ -39,12 +39,12 @@ export default function Settings() {
 
   return (
     <View className='p-8 gap-4'>
-      <CustomText className='py-1 border-b border-neutral-300'>Dark mode</CustomText>
+      <CustomText className='py-1 border-b'>Dark mode</CustomText>
       <SegmentedControls 
         options={['auto', 'dark', 'light']} 
         setValue={handleThemeChange} 
         value={selectedThemeOption} />
-      <CustomText className='py-1 border-b border-neutral-300'>General settings</CustomText>
+      <CustomText className='py-1 border-b'>General settings</CustomText>
       <View className='flex gap-2'>
         <Link 
           href={REPO_LINK}

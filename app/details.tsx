@@ -1,15 +1,15 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
-
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Pressable, ScrollView, View } from 'react-native';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
+import CustomText from '@/components/custom-text';
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { getStore, setStore } from '@/services/async-stores';
 import { getAllRates } from '@/services/get-rates';
-import { Rate } from '@/types/rate';
+import type { Rate } from '@/types/rate';
 
 export default function Details() {
   const { from, into } = useLocalSearchParams<{ from:string, into:string }>();
@@ -173,16 +173,8 @@ export default function Details() {
       <View className='flex gap-4'>
         <View className='flex-row justify-between items-center'>
           <View>
-            <Text 
-              style={styles.font_mono}
-              className='text-xl'>
-              {from} to {into}
-            </Text>
-            <Text 
-              style={styles.font_mono}
-              className={`text-sm ${styles.text_muted}`}>
-              {currencyName.of(from)} to {currencyName.of(into)}
-            </Text>
+            <CustomText className='text-xl'>{from} to {into}</CustomText>
+            <CustomText className={`text-sm ${styles.text_muted}`}>{currencyName.of(from)} to {currencyName.of(into)}</CustomText>
           </View>
           <Pressable
             onPress={handleFavouriteClick}
@@ -194,23 +186,19 @@ export default function Details() {
           </Pressable>
         </View>
         <View>
-          <Text 
-            style={styles.font_mono}
-            className='text-xl'>
-            1 {from} = {data.length > 0 ? data[data.length - 1].rate : 0} {into}
-          </Text>
-          <Text style={styles.font_mono}>
+          <CustomText className='text-xl'>1 {from} = {data.length > 0 ? data[data.length - 1].rate : 0} {into}</CustomText>
+          <CustomText>
             { isDotClick ? 
-              <Text className={`text-sm ${styles.text_muted}`}>{dateDetails}</Text>
+              <CustomText className={`text-sm ${styles.text_muted}`}>{dateDetails}</CustomText>
               :
-              <Text className={`${isUpTrend ? 'text-green-800' : 'text-red-800'} text-sm flex gap-2 items-center`}>
+              <CustomText className={`${isUpTrend ? 'text-green-800' : 'text-red-800'} text-sm flex gap-2 items-center`}>
                 <Ionicons 
                   name={isUpTrend ? 'trending-up-outline' : 'trending-down-outline'}
                   size={styles.icon} />
                 {trendDetails}
-              </Text>
+              </CustomText>
             }
-          </Text>
+          </CustomText>
         </View>
         <View>
           <ResponsiveContainer 
@@ -245,7 +233,7 @@ export default function Details() {
                 key={option}
                 onPress={() => setTimeframeOption(option)}
                 className={`${timeframeOption === option && 'bg-neutral-300'} items-center p-2 rounded transition duration-300 hover:bg-neutral-400`}>
-                <Text style={styles.font_mono}>{option}</Text>
+                <CustomText>{option}</CustomText>
               </Pressable>
             )}
           </View>
@@ -254,11 +242,7 @@ export default function Details() {
           <Pressable 
             onPress={handleConvertCurrency}
             className='p-4'>
-            <Text 
-              style={styles.font_mono}
-              className='text-sm text-center'>
-              Convert {from} to {into}
-            </Text>
+            <CustomText className='text-sm text-center'>Convert {from} to {into}</CustomText>
           </Pressable>
         </View>
       </View>

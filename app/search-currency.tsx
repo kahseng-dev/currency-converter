@@ -1,9 +1,10 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, TextInput, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import CustomText from '@/components/custom-text';
 import { currencies } from '@/constants/currencies';
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
@@ -58,12 +59,8 @@ export default function SearchCurrency() {
             onPress={() => handleCurrencyClick(currencyCode.item)}
             key={currencyCode.index}
             className='p-2 flex flex-row gap-4 hover:bg-neutral-300'>
-            <Text style={styles.font_mono}>{currencyCode.item}</Text>
-            <Text 
-              className='text-neutral-500'
-              style={styles.font_mono}>
-              {currencyName.of(currencyCode.item)}
-            </Text>
+            <CustomText>{currencyCode.item}</CustomText>
+            <CustomText className='text-neutral-500'>{currencyName.of(currencyCode.item)}</CustomText>
           </Pressable>
         } />
     )
@@ -80,7 +77,7 @@ export default function SearchCurrency() {
                 onChangeText={handleSearch}
                 placeholder='Type a currency'
                 value={search}
-                style={styles.font_mono}
+                style={{ fontFamily: styles.font_mono }}
                 className='w-full placeholder:text-neutral-500 outline-none' />
         </View>
         {loadSearchResults()}

@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import CustomText from '@/components/custom-text';
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
 import { getStore } from '@/services/async-stores';
@@ -99,11 +100,7 @@ export default function Convert() {
           <Pressable
             onPress={() => handleChangeCurrency('from')}
             className='flex flex-row items-center gap-2'>
-            <Text
-              className='text-xl'
-              style={styles.font_mono}>
-              {rate.from}
-            </Text>
+            <CustomText className='text-xl'>{rate.from}</CustomText>
             <Ionicons
               name='chevron-down'
               size={styles.icon} />
@@ -113,18 +110,14 @@ export default function Convert() {
             value={fromAmount}
             keyboardType='decimal-pad'
             maxLength={12}
-            style={styles.font_mono}
+            style={{ fontFamily: styles.font_mono }}
             className='text-xl text-right outline-none' />
         </View>
         <View className='p-8 flex flex-row justify-between border border-neutral-300 rounded-lg bg-white'>
           <Pressable 
             onPress={() => handleChangeCurrency('into')}
             className='flex flex-row items-center gap-2'>
-            <Text
-              className='text-xl'
-              style={styles.font_mono}>
-              {rate.into}
-            </Text>
+            <CustomText className='text-xl'>{rate.into}</CustomText>
             <Ionicons
               name='chevron-down'
               size={styles.icon} />
@@ -134,7 +127,7 @@ export default function Convert() {
             value={intoAmount}
             keyboardType='decimal-pad'
             maxLength={12}
-            style={styles.font_mono}
+            style={{ fontFamily: styles.font_mono }}
             className='text-xl text-right outline-none' />
         </View>
         <Pressable 
@@ -145,12 +138,10 @@ export default function Convert() {
             size={styles.icon} />
         </Pressable>
       </View>
-      <Text 
-        className='py-2 text-center bg-neutral-300 rounded'
-        style={styles.font_mono}>
+      <CustomText className='py-2 text-center bg-neutral-300 rounded'>
         1 {rate.from} = {rate.rate} {rate.into} 
-        <Text className='text-neutral-500'> at the mid-market rate</Text>
-      </Text>
+        <CustomText className='text-neutral-500'> at the mid-market rate</CustomText>
+      </CustomText>
     </View>
   );
 }

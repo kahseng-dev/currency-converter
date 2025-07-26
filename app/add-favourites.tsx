@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, View } from 'react-native';
 
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import CustomText from '@/components/custom-text';
 import { currencies } from '@/constants/currencies';
 import { stores } from '@/constants/key-stores';
 import { styles } from '@/constants/styles';
@@ -35,12 +36,8 @@ export default function AddFavourites() {
             onPress={() => handleCurrencyClick(currency.item)}
             key={currency.index}
             className='p-2 flex flex-row gap-4 hover:bg-neutral-300'>
-            <Text style={styles.font_mono}>{currency.item}</Text>
-            <Text 
-              className='text-neutral-500'
-              style={styles.font_mono}>
-              {currencyName.of(currency.item)}
-            </Text>
+            <CustomText>{currency.item}</CustomText>
+            <CustomText className='text-neutral-500'>{currencyName.of(currency.item)}</CustomText>
           </Pressable>
         } />
     )
@@ -55,12 +52,8 @@ export default function AddFavourites() {
             onPress={() => handleCurrencyClick(currency.item)}
             key={currency.index}
             className='p-2 flex flex-row gap-4 hover:bg-neutral-300'>
-            <Text style={styles.font_mono}>{currency.item}</Text>
-            <Text 
-              className='text-neutral-500'
-              style={styles.font_mono}>
-              {currencyName.of(currency.item)}
-            </Text>
+            <CustomText>{currency.item}</CustomText>
+            <CustomText className='text-neutral-500'>{currencyName.of(currency.item)}</CustomText>
           </Pressable>
         } />
     )
@@ -138,14 +131,10 @@ export default function AddFavourites() {
           className='p-4 border border-neutral-300 bg-white rounded'>
           { from ? 
             <View className='flex-row justify-between items-center'>
-              <Text 
-                className='flex gap-2 text-sm'
-                style={styles.font_mono}>
+              <CustomText className='flex gap-2 text-sm'>
                 {from}
-                <Text className='text-neutral-500'>
-                  {currencyName.of(from)}
-                </Text>
-              </Text>
+                <CustomText className='text-neutral-500'>{currencyName.of(from)}</CustomText>
+              </CustomText>
               <Pressable onPress={() => handleClearField('from')}>
                 <Ionicons 
                   name='close-outline'
@@ -153,11 +142,7 @@ export default function AddFavourites() {
               </Pressable>
             </View>
             :
-            <Text
-              className='text-neutral-500 text-sm'
-              style={styles.font_mono}>
-              From
-            </Text>
+            <CustomText className='text-neutral-500 text-sm'>From</CustomText>
           }
         </Pressable>
         <Pressable 
@@ -165,14 +150,10 @@ export default function AddFavourites() {
           className='p-4 border border-neutral-300 bg-white rounded'>
           { into ? 
             <View className='flex-row justify-between items-center'>
-              <Text 
-                className='flex gap-2 text-sm'
-                style={styles.font_mono}>
+              <CustomText className='flex gap-2 text-sm'>
                 {into}
-                <Text className='text-neutral-500'>
-                  {currencyName.of(into)}
-                </Text>
-              </Text>
+                <CustomText className='text-neutral-500'>{currencyName.of(into)}</CustomText>
+              </CustomText>
               <Pressable onPress={() => handleClearField('into')}>
                 <Ionicons 
                   name='close-outline'
@@ -180,11 +161,7 @@ export default function AddFavourites() {
               </Pressable>
             </View>
             :
-            <Text
-              className='text-neutral-500 text-sm'
-              style={styles.font_mono}>
-              To
-            </Text>
+            <CustomText className='text-neutral-500 text-sm'>To</CustomText>
           }
         </Pressable>
         <Pressable 
@@ -195,38 +172,25 @@ export default function AddFavourites() {
             size={styles.icon} />
         </Pressable>
       </View>
+      
       { !from || !into ?
         <View className='flex gap-2'>
-          <Text 
-            style={styles.font_mono}
-            className='py-1 border-b border-neutral-300 text-neutral-700'>
-            Suggested currencies
-          </Text>
+          <CustomText className='py-1 border-b border-neutral-300 text-neutral-700'>Suggested currencies</CustomText>
           {loadSuggestedCurrencies()}
-          <Text 
-            style={styles.font_mono}
-            className='py-1 border-b border-neutral-300 text-neutral-700'>
-            All currencies
-          </Text>
+          <CustomText className='py-1 border-b border-neutral-300 text-neutral-700'>All currencies</CustomText>
           {loadAllCurrencies()}
         </View>
         :
         <>
           <Pressable onPress={handleAddRate}>
-            <Text 
-              style={styles.font_mono}
-              className='p-4 text-center bg-white text-sm rounded border border-neutral-300 bg-transparent hover:bg-neutral-300 transition duration-300'>
-              Add {from} to {into}
-            </Text>
+            <CustomText className='p-4 text-center bg-white text-sm rounded border border-neutral-300 bg-transparent hover:bg-neutral-300 transition duration-300'>Add {from} to {into}</CustomText>
           </Pressable>
-          <Text 
-            style={styles.font_mono}
-            className={`${isDuplicate ? 'opacity-100' : 'opacity-0'} p-2 mt-4 gap-2 flex bg-neutral-900 text-white rounded transition duration-300`}>
+          <CustomText className={`${isDuplicate ? 'opacity-100' : 'opacity-0'} p-2 mt-4 gap-2 flex bg-neutral-900 text-white rounded transition duration-300`}>
             <Ionicons 
               name='alert-circle-outline'
               size={styles.icon} />
             {from} to {into} is already favourited.
-          </Text>
+          </CustomText>
         </>
       }
     </ScrollView>
